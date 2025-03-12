@@ -8,7 +8,7 @@ from user_defined_queue.repository.user_defined_queue_repository_impl import Use
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'template'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'template', 'include', 'socket_server'))
 
-from template.include.socket_server.utility.color_print import ColorPrinter
+# from template.include.socket_server.utility.color_print import ColorPrinter
 
 class TestServiceImpl(TestService):
     def __init__(self, userDefinedQueueRepository: UserDefinedQueueRepositoryImpl):
@@ -17,5 +17,5 @@ class TestServiceImpl(TestService):
 
     def requestTestResult(self):
         userDefinedReceiverFastAPIChannel = self.__userDefinedQueueRepository.getUserDefinedSocketReceiverFastAPIChannel()
-        ColorPrinter.print_important_data("userDefinedReceiverFastAPIChannel", userDefinedReceiverFastAPIChannel)
+        # ColorPrinter.print_important_data("userDefinedReceiverFastAPIChannel", userDefinedReceiverFastAPIChannel)
         return self.__testRepository.getResult(userDefinedReceiverFastAPIChannel)

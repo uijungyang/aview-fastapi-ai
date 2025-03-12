@@ -11,7 +11,7 @@ from user_defined_queue.repository.repository.user_defined_queue_repository_impl
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'template'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'template', 'include', 'socket_server'))
 
-from template.include.socket_server.utility.color_print import ColorPrinter
+# from template.include.socket_server.utility.color_print import ColorPrinter
 
 
 class RepositoryToDbServiceImpl(ReportToDbService):
@@ -23,7 +23,7 @@ class RepositoryToDbServiceImpl(ReportToDbService):
     def requestReportToAi(self):
         userDefinedReceiverFastAPIChannel = self.__userDefinedQueueRepository.getUserDefinedSocketReceiverFastAPIChannel()
 
-        ColorPrinter.print_important_message("requestToCheckMultipleUserTestPoint()")
+        # ColorPrinter.print_important_message("requestToCheckMultipleUserTestPoint()")
 
         aiResponse = self.__reportToDbRepository.requestAiResult(userDefinedReceiverFastAPIChannel)
 

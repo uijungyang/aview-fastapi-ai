@@ -9,7 +9,7 @@ from user_defined_queue.repository.user_defined_queue_repository_impl import Use
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'template'))
 
-from template.include.socket_server.utility.color_print import ColorPrinter
+# from template.include.socket_server.utility.color_print import ColorPrinter
 
 reportToDbRouter = APIRouter()
 
@@ -19,7 +19,7 @@ async def injectReportToDbService() -> ReportToDbServiceImpl:
 @reportToDbRouter.post('/update')
 async def requestReportToDb(reportToDbService: ReportToDbServiceImpl = Depends(injectReportToDbService)):
 
-    ColorPrinter.print_important_message("requestReportToDbPoint()")
+    # ColorPrinter.print_important_message("requestReportToDbPoint()")
 
     success = await reportToDbService.requestReportToAi()
 
