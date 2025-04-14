@@ -308,3 +308,6 @@ pyrightconfig.json
 *.pem
 *.key
 *.crt
+
+# model/vosk-model-small-ko-0.22 HCLr.fst
+HCLr.fst
