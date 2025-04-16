@@ -6,7 +6,7 @@ load_dotenv()
 
 class DjangoHttpClient:
     djangoHttpxInstance = httpx.AsyncClient(
-        base_url=os.getenv("DJANGO_URL"),
+        base_url=os.getenv("BASE_URL"),
         timeout=2500
     )
 

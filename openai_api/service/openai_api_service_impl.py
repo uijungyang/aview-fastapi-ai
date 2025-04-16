@@ -1,23 +1,27 @@
+import openai
 import os
-import sys
+from typing import Dict, Optional, List
 
 from openai_api.repository.openai_api_repository_impl import OpenaiApiRepositoryImpl
 from openai_api.service.openai_api_service import OpenaiApiService
-from user_defined_queue.repository.user_defined_queue_repository_impl import UserDefinedQueueRepositoryImpl
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'template'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'template', 'include', 'socket_server'))
-
-# from template.include.socket_server.utility.colort_print import ColorPrinter
 
 
 class OpenaiApiServiceImpl(OpenaiApiService):
 
-    def __init__(self, userDefinedQueueRepository: UserDefinedQueueRepositoryImpl):
-        self.__openaiApiRepository = OpenaiApiRepositoryImpl()
-        self.__userDefinedQueueRepository = userDefinedQueueRepository()
+    def __init__(self):
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        self.OpenaiApiRepository = OpenaiApiRepositoryImpl()
 
-    def requestOpenaiApiResult(self):
-        userDefinedReceiverFastAPIChannel = self.__userDefinedQueueRepository.getUserDefinedSocketReceiverFastAPIChannel()
-        # ColorPrinter.print_important_data("userDefinedReceiverFastAPIChannel", userDefinedReceiverFastAPIChannel)
-        return self.__openaiApiRepository.getResult(userDefinedReceiverFastAPIChannel)
+    async def generate_first_question(self, company: str, position: str, level: Optional[str]) -> str:
+        return await self.OpenaiApiRepository.generate_first_question(company, position, level)
+
+    async def generate_followup_question(self, previous_question: str, user_answer: str, context: Dict[str, str]) -> Dict:
+        return await self.OpenaiApiRepository.generate_followup_question(previous_question, user_answer, context)
+
+    async def end_interview(self,
+        session_id: str,
+        context: Dict[str, str],
+        questions: List[str],
+        answers: List[str]
+    ) -> Dict:
+        return await self.OpenaiApiRepository.end_interview(session_id, context, questions, answers)
