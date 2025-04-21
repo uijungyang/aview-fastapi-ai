@@ -7,7 +7,7 @@ class UserDefinedQueueServiceImpl(UserDefinedQueueService):
 
     def __new__(cls):
         if cls.__instance is None:
-            cls.__instance = super.__new__(cls)
+            cls.__instance = super().__new__(cls)
             cls.__instance.__userDefinedQueueRepository = UserDefinedQueueRepositoryImpl.getInstance()
 
         return cls.__instance
