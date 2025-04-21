@@ -70,4 +70,4 @@ jobs:
 
           docker-compose up -d
 
-          echo "✅ Deployment Complete!"
+          echo "Deployment Complete!"
