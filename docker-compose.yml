@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+  app:
+    image: ghcr.io/${GITHUB_ACTOR}/${PROJECT_NAME}:latest
+    container_name: fastapi
+    ports:
+	    - "${FASTAPI_PORT}:${FASTAPI_PORT}"
+    env_file:
+      - .env
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
