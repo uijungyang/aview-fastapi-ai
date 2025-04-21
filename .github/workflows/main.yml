@@ -54,9 +54,6 @@ jobs:
     runs-on: [ self-hosted, deploy-fastapi ]
 
     steps:
-      - name: Check GHCR_TOKEN value (length)
-        run: echo "${{ secrets.GHCR_TOKEN }}" | wc -c
-      
       - name: Deploy to Production
         shell: bash
         run: |
@@ -65,8 +62,8 @@ jobs:
           cd /home/ec2-user/jobstick/fastapi
           docker-compose down
 
-          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          docker pull "${{ env.DOCKER_IMAGE }}:latest"
+          echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker pull ${{ env.DOCKER_IMAGE }}:latest
 
           docker image prune -f
           docker logout
