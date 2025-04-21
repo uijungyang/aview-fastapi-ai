@@ -54,6 +54,9 @@ jobs:
     runs-on: [ self-hosted, deploy-fastapi ]
 
     steps:
+      - name: Check GHCR_TOKEN value (length)
+        run: echo "${{ secrets.GHCR_TOKEN }}" | wc -c
+      
       - name: Deploy to Production
         shell: bash
         run: |
