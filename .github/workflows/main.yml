@@ -3,10 +3,10 @@ name: Deploy FastAPI to GHCR
 on:
   push:
     branches:
-      -main
+      - main
 
 env:
-  IMAGE_NAME: ${{ github.repository}}
+  IMAGE_NAME: ${{ github.repository }}
   DOCKER_IMAGE: ghcr.io/${{ github.actor }}/${{ github.repository }}
   VERSION: ${{ github.sha }}
 
@@ -48,25 +48,26 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-deploy:
-  name: Deploy to Production
-  needs: build-and-push
-  runs-on: [ self-hosted, deploy-fastapi ]
+  deploy:
+    name: Deploy to Production
+    needs: build-and-push
+    runs-on: [ self-hosted, deploy-fastapi ]
 
-  steps:
-    - name: Deploy to Production
-      run: |
-        echo "Deploying to Production Server..."
-        
-        cd /home/ec2-user/jobstick/fastapi
-        docker-compose down
-        
-        echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-        docker pull ${{ env.DOCKER_IMAGE }}:latest
-        
-        docker image prune -f
-        docker logout
-        
-        docker-compose up -d
-        
-        echo "Deployment Complete!"
+    steps:
+      - name: Deploy to Production
+        shell: bash
+        run: |
+          echo "Deploying to Production Server..."
+          
+          cd /home/ec2-user/jobstick/fastapi
+          docker-compose down
+          
+          echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker pull ${{ env.DOCKER_IMAGE }}:latest
+          
+          docker image prune -f
+          docker logout
+          
+          docker-compose up -d
+          
+          echo "Deployment Complete!"
