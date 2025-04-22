@@ -1,6 +1,7 @@
 FROM python:3.12-slim
 
 COPY ./app /app
+COPY ./interview /app/interview
 COPY requirements.txt /app
 WORKDIR /app
 
