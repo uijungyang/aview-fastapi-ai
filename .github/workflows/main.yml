@@ -7,7 +7,7 @@ on:
 
 env:
   IMAGE_NAME: ${{ github.repository }}
-  DOCKER_IMAGE: ghcr.io/${{ github.actor }}/aview-fastapi-ai
+  DOCKER_IMAGE: ghcr.io/${{ github.repository }}
   VERSION: ${{ github.sha }}
 
 jobs:
@@ -62,8 +62,8 @@ jobs:
           cd /home/ec2-user/jobstick/fastapi
           docker-compose down
 
-          echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker pull ${{ env.DOCKER_IMAGE }}
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker pull ${{ env.DOCKER_IMAGE }}:latest
 
           docker image prune -f
           docker logout
