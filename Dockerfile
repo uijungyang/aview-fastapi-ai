@@ -1,6 +1,7 @@
 FROM python:3.12-slim
 
 COPY ./app /app/app
+COPY requirements.txt /app
 WORKDIR /app
 
 ENV PYTHONPATH=/app
