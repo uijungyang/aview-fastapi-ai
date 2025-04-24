@@ -8,9 +8,13 @@ class InterviewService(ABC):
         pass
 
     @abstractmethod
-    def generateFollowupQuestion(self, interviewId: int, questionId: int, answerText: str, userToken: str) -> dict:
+    def generateFirstFollowupQuestions(self, request: dict) -> dict:
         pass
 
     @abstractmethod
-    def end_interview(self, session_id: str, context: Dict[str, str], questions: List[str], answers: List[str]) -> Dict:
+    def generateProjectFollowupQuestion(self, interviewId: int, questionId: int, answerText: str, userToken: str) -> dict:
+        pass
+
+    @abstractmethod
+    def end_interview(self, sessionId: str, context: Dict[str, str], questions: List[str], answers: List[str]) -> Dict:
         pass
