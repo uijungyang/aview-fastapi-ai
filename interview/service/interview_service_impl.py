@@ -51,9 +51,7 @@ class InterviewServiceImpl(InterviewService):
 
     #def generateProjectQuestion()
 
-
-
-
+    '''''
     def generateProjectFollowupQuestion(
             self, interviewId: int, questionId: int, answerText: str, userToken: str
     ) -> dict:
@@ -68,7 +66,7 @@ class InterviewServiceImpl(InterviewService):
             "questions": followup_question
         }
 
-
+'''''
     def end_interview(self,
         sessionId: str,
         context: Dict[str, str],
