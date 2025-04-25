@@ -73,7 +73,7 @@ async def generateFirstFollowupQuestions(
 
 # 프로젝트 첫 질문 생성
 @interviewRouter.post("/interview/question/project-generate")
-async def generateProjectFixedQuestion(
+async def generateProjectQuestion(
         requestForm: ProjectQuestionGenerationRequestForm,
         interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
@@ -99,7 +99,7 @@ async def generateProjectFixedQuestion(
 
 # 프로젝트 꼬리 질문 생성
 @interviewRouter.post("/interview/question/project-followup-generate")
-async def generateProjectFollowupInterviewQuestion(
+async def generateProjectFollowupQuestion(
     requestForm: ProjectFollowupQuestionGenerationRequestForm,
     interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
