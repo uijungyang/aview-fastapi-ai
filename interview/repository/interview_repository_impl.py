@@ -37,6 +37,7 @@ class InterviewRepositoryImpl(InterviewRepository):
         # GPT 프롬프트 구성
         prompt = (
             f"너는 IT 기업의 면접관이야. 아래 면접자의 기본정보(직무, 경력)와 자기소개 답변, 학력 배경을 참고해서, 관련된 꼬리 질문 2개를 만들어줘.\n\n"
+            f"- 면접자를 부를 때 '지원자님'이라고 해"
             f"[직무]: {topic}"
             f"[경력]: {experienceLevel}"
             f"[학력 배경]: {academicBackground}\n"
@@ -65,8 +66,7 @@ class InterviewRepositoryImpl(InterviewRepository):
         print(f"✅ [repository] Follow-up questions generated: {questions}")
         return questions
 
-
-
+    '''''
     # 꼬리질문 생성
     def generateProjectFollowupQuestion(
             self,
@@ -110,7 +110,7 @@ class InterviewRepositoryImpl(InterviewRepository):
         questions = [q.strip() for q in questions_text.split("\n") if q.strip()]
 
         return questions
-
+'''''
     # 면접 종료
     def end_interview(self,
                                 session_id: str,
