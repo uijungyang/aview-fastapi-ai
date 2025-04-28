@@ -7,7 +7,7 @@ from interview.service.request.question_generation_request import FirstQuestionG
 
 class ProjectFollowupQuestionGenerationRequestForm(BaseModel):
     interviewId: int
-    jobCategory: int # 숫자 값으로 받기
+    topic: int # 숫자 값으로 받기
     experienceLevel: int  # 숫자 값으로 받기
     tech_stack: int
     projectExperience: int   # 이건 꼭 질문으로 넣어야함

@@ -10,14 +10,14 @@ class InterviewRepositoryImpl(InterviewRepository):
 
     # 첫 질문 생성: 고장질문 "자기소개 해주세요"
     def generateQuestions(
-        self, interviewId: int, jobCategory: str, experienceLevel: str, userToken: str
+        self, interviewId: int, topic: str, experienceLevel: str, userToken: str
     ) -> str:
         print(f"[repository] Generating a single question from fine-tuned model for interviewId={interviewId}, userToken={userToken}")
 
         # 고정질문
         # 자기소개로 개인정보 (이름과 나이, 학교 등등) 얻기 -> 이 정보는 다음 답변에 저장
         return (
-            f"{jobCategory}의 {experienceLevel}분야에 지원해주셔서 감사합니다. "
+            f"{topic}의 {experienceLevel}분야에 지원해주셔서 감사합니다. "
             f"저는 AI 면접관입니다."
             f" 우선 지원자분 자기소개 부탁드립니다."
         )

@@ -6,7 +6,7 @@ class InterviewRepository(ABC):
     @abstractmethod
     def generateQuestions(self,
             interviewId: int,
-            jobCategory: str,
+            topic: str,
             experienceLevel: str,
             userToken: str
     ) -> str:
