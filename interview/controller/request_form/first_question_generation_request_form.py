@@ -11,8 +11,6 @@ class FirstQuestionGenerationRequestForm(BaseModel):
     experienceLevel: int  # 숫자 값으로 받기
     userToken: str
 
-
-
     def toFirstQuestionGenerationRequest(self):
         job_name = JobCategory.get_job_name(self.topic)  # 변경된 이름 반영
         experience_level = ExperienceLevel.get_experience_level(self.experienceLevel)  # 변경된 이름 반영
