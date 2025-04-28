@@ -13,11 +13,14 @@ class ProjectFollowupQuestionGenerationRequestForm(BaseModel):
     projectExperience: int   # 이건 꼭 질문으로 넣어야함
     userToken: str
 
+    # def toQuestionGenerationRequest(self):
+    #     job_name = JobCategory.get_job_name(self.topic)  # 변경된 이름 반영
+    #     experience_level = ExperienceLevel.get_experience_level(self.experienceLevel)  # 변경된 이름 반영
     def toQuestionGenerationRequest(self):
-        job_name = JobCategory.get_job_name(self.topic)  # 변경된 이름 반영
-        experience_level = ExperienceLevel.get_experience_level(self.experienceLevel)  # 변경된 이름 반영
+        job_name = JobCategory.get_job_name(self.topic)
+        experience_level = ExperienceLevel.get_experience_level(self.experienceLevel)
 
-        return ProjectFollowupQuestionGenerationRequestForm(
+        return FirstQuestionGenerationRequest(
             interviewId=self.interviewId,
             topic=job_name,
             experienceLevel=experience_level,
