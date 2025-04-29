@@ -52,13 +52,13 @@ async def generateFirstFollowupQuestions(
     requestForm: FirstFollowupQuestionRequestForm,
     interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
-    print(f"🎯 [controller] Received generateIntroFollowupQuestions() requestForm: {requestForm}")
+    print(f"🎯 [controller] Received generateFirstFollowupQuestions() requestForm: {requestForm}")
 
     try:
         # 여기에 질문 생성 로직 호출
-        response = interviewService.generateFirstFollowupQuestions(
-            requestForm.toQuestionGenerationRequest()
-        )
+        # response = interviewService.generateFirstFollowupQuestions(
+        #    requestForm.toFirstFollowupQuestionGenerationRequest()
+        response = interviewService.generateFirstFollowupQuestions(requestForm.toFirstFollowupQuestionGenerationRequest())
 
         return JSONResponse(
             content=response,
@@ -67,7 +67,7 @@ async def generateFirstFollowupQuestions(
         )
 
     except Exception as e:
-        print(f"첫질문 심화질문 Error in generateIntroFollowupQuestions(): {str(e)}")
+        print(f"첫질문 심화질문 Error in generateFirstFollowupQuestions(): {str(e)}")
         raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
 
 
