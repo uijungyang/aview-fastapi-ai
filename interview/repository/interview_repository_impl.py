@@ -52,7 +52,7 @@ class InterviewRepositoryImpl(InterviewRepository):
         )
 
         # GPT 호출
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "너는 진짜 면접관처럼 질문을 생성하는 역할이야."},
@@ -60,7 +60,7 @@ class InterviewRepositoryImpl(InterviewRepository):
             ]
         )
 
-        result_text = response.choices[0].message["content"].strip()
+        result_text = response.choices[0].message.content.strip()
         questions = [q.strip() for q in result_text.split("\n") if q.strip()]
 
         print(f"✅ [repository] Follow-up questions generated: {questions}")
@@ -94,7 +94,7 @@ class InterviewRepositoryImpl(InterviewRepository):
             f"- 질문은 총 5개\n"
             f"- 질문은 짧고 명확하게\n"
             f"- 질문만 출력하고 설명은 생략\n"
-            f"- 줄바꿈(\\n)으로 질문을 구분해줘\n"
+            f"- 줄바꿈(\n)으로 질문을 구분해줘\n"
         )
 
         # 📡 GPT-4 호출
