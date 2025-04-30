@@ -77,9 +77,11 @@ class InterviewRepositoryImpl(InterviewRepository):
         print(f"📡 [AI Server] Generating fixed project question for interviewId={interviewId}, userToken={userToken}")
 
         if projectExperience == "프로젝트 경험 있음":
-            return ["어떤 프로젝트를 진행하셨나요?"]
+            return ["다음 질문은 프로젝트에 관한 질문입니다.\n",
+                    "어떤 프로젝트를 진행하셨나요?"]
         else:
-            return ["직무와 관련된 활동을 해보신 경험이 있으신가요?"]
+            return ["다음 질문은 프로젝트 혹은 직무 관련 활동에 관한 질문입니다.\n",
+                    "직무와 관련된 활동을 해보신 경험이 있으신가요?"]
 
 
     # 프로젝트 꼬리질문 생성: 4
