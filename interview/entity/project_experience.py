@@ -9,7 +9,7 @@ class ProjectExperience(Enum):
     @classmethod
     def get_project_experience(cls, projectExperience: int) -> str:
         mapping = {
-            1: "프로젝트 경험 있음",
-            2: "프로젝트 경험 없음",
+            1: "프로젝트 경험 없음",
+            2: "프로젝트 경험 있음",
         }
         return mapping.get(projectExperience, "프로젝트 해당사항 없음")
