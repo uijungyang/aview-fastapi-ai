@@ -3,6 +3,7 @@ from typing import List, Dict
 from interview.service.interview_service import InterviewService
 from interview.repository.interview_repository_impl import InterviewRepositoryImpl
 from interview.service.request.first_followup_question_generation_request import FirstFollowupQuestionGenerationRequest
+from interview.service.request.project_question_generation_request import ProjectQuestionGenerationRequest
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
 
 
@@ -48,10 +49,24 @@ class InterviewServiceImpl(InterviewService):
             "questions": questions
         }
 
+    # 프로젝트 첫질문 생성
+    def generateProjectQuestion(self, request: ProjectQuestionGenerationRequest) -> dict:
+        interviewId = request.interviewId
+        projectExperience = request.experienceLevel
+        userToken = request.userToken
 
-    #def generateProjectQuestion()
+        print(f"💡 [service] Requesting question generation for interviewId={interviewId}")
 
-    '''''
+        questions = self.interviewRepository.generateProjectQuestion(
+            interviewId, projectExperience, userToken
+        )
+
+        return {
+            "interviewId": interviewId,
+            "questions": questions
+        }
+
+
     def generateProjectFollowupQuestion(
             self, interviewId: int, questionId: int, answerText: str, userToken: str
     ) -> dict:
@@ -66,7 +81,7 @@ class InterviewServiceImpl(InterviewService):
             "questions": followup_question
         }
 
-'''''
+
     def end_interview(self,
         sessionId: str,
         context: Dict[str, str],

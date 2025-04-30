@@ -21,7 +21,7 @@ async def injectInterviewService() -> InterviewServiceImpl:
     return InterviewServiceImpl()
 
 
-# 첫 질문 생성
+# 첫 질문 생성 1
 @interviewRouter.post("/interview/question/generate")
 async def generateInterviewQuestion(
     requestForm: FirstQuestionGenerationRequestForm,
@@ -71,7 +71,7 @@ async def generateFirstFollowupQuestions(
         raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
 
 
-# 프로젝트 첫 질문 생성
+# 프로젝트 첫 질문 생성: 3
 @interviewRouter.post("/interview/question/project-generate")
 async def generateProjectQuestion(
         requestForm: ProjectQuestionGenerationRequestForm,
@@ -82,8 +82,7 @@ async def generateProjectQuestion(
     try:
         # 프로젝트 고정 질문 생성 로직 호출
         response = interviewService.generateProjectQuestion(
-            interviewId=requestForm.interviewId,
-            userToken=requestForm.userToken
+            requestForm.toProjectQuestionGenerationRequest
         )
 
         return JSONResponse(

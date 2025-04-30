@@ -25,7 +25,15 @@ class InterviewRepository(ABC):
     ) -> list[str]:
         pass
 
-'''''
+    @abstractmethod
+    def generateProjectQuestion(
+            self,
+            interviewId: int,
+            projectExperience: str,
+            userToken: str
+    ) -> list[str]:
+        pass
+
     @abstractmethod
     def generateProjectFollowupQuestion(self,
             interviewId: int,
@@ -46,5 +54,4 @@ class InterviewRepository(ABC):
         answers: List[str]
     ) -> Dict:
         pass
-        
-        '''''
+
