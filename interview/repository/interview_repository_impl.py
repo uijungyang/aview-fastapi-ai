@@ -32,7 +32,7 @@ class InterviewRepositoryImpl(InterviewRepository):
             answerText: str,
             userToken: str
     ) -> list[str]:
-        print(f"🧠 [repository] Generating intro follow-up questions for interviewId={interviewId},userToken={userToken}")
+        print(f" [repository] Generating intro follow-up questions for interviewId={interviewId},userToken={userToken}")
 
         # GPT 프롬프트 구성
         prompt = (
@@ -63,11 +63,25 @@ class InterviewRepositoryImpl(InterviewRepository):
         result_text = response.choices[0].message.content.strip()
         questions = [q.strip() for q in result_text.split("\n") if q.strip()]
 
-        print(f"✅ [repository] Follow-up questions generated: {questions}")
+        print(f" [repository] Follow-up questions generated: {questions}")
         return questions
 
-    '''''
-    # 꼬리질문 생성
+    # 프로젝트 질문: 3
+    def generateProjectQuestion(
+            self,
+            interviewId: int,
+            projectExperience: str,
+            userToken: str
+    ) -> list[str]:
+        print(f"📡 [AI Server] Generating fixed project question for interviewId={interviewId}, userToken={userToken}")
+
+        if projectExperience == "프로젝트 경험 있음":
+            return ["어떤 프로젝트를 진행하셨나요?"]
+        else:
+            return ["직무와 관련된 활동을 해보신 경험이 있으신가요?"]
+
+
+    # 프로젝트 꼬리질문 생성: 4
     def generateProjectFollowupQuestion(
             self,
             interviewId: int,
@@ -79,23 +93,28 @@ class InterviewRepositoryImpl(InterviewRepository):
     ) -> list[str]:
         print(f"📡 [AI Server] Generating 5 questions for interviewId={interviewId}, userToken={userToken}")
 
-
         # 🎯 프롬프트 정의
-        prompt = (
-            f"너는 기술 면접관이야. 다음 면접자 정보를 기반으로, 맞춤형 면접 질문 5개를 생성해줘.\n\n"
-            f"[직무 분야]: {jobCategory}\n"
-            f"[경력 수준]: {mapped_experience}\n"
-            f"[학력 배경]: {mapped_academic}\n"
-            f"[사용 기술 스택]: {mapped_tech}\n"
-            
-            f"- '프로젝트 경험'이 과 관련된 질문이 반드시 1개 포함되어야 해\n"
-            f"[프로젝트 경험]: {'있음' if projectExperience else '없음'}\n\n"
-            f"요청사항:\n"
-            f"- 질문은 총 5개\n"
-            f"- 질문은 짧고 명확하게\n"
-            f"- 질문만 출력하고 설명은 생략\n"
-            f"- 줄바꿈(\n)으로 질문을 구분해줘\n"
-        )
+        if projectExperience == "프로젝트 경험 있음":
+            prompt = (
+                "너는 기술 면접관이야. 다음 면접자 정보를 기반으로, 맞춤형 기술 면접 질문을 생성해줘.\n\n"
+                "[프로젝트 경험 유무]: 있음\n"
+                "요청사항:\n"
+                "- 면접자는 총 5개의 질문을 받게 됩니다.\n"
+                "- 질문 하나 → 답변 → 다음 질문 순으로 진행합니다.\n"
+                "- 지금은 그 중 첫 번째 질문만 출력하세요.\n"
+                "- 질문은 짧고 명확하게, 설명 없이 한 문장으로 출력하세요.\n"
+            )
+        else:
+            prompt = (
+                "너는 기술 면접관이야. 다음 면접자 정보를 기반으로, 맞춤형 면접 질문을 하나 생성해줘.\n\n"
+                "[프로젝트 경험 유무]: 없음\n"
+                "요청사항:\n"
+                "- 질문은 총 5개 중 하나씩 출력할 것 (이번에 출력할 질문은 1개)\n"
+                "- 프로젝트 경험이 없으므로, 직무와 유사한 활동을 했는지 확인하는 질문을 포함할 것\n"
+                "- 질문은 짧고 명확하게\n"
+                "- 질문만 출력하고 설명은 생략\n"
+                "- 줄바꿈 없이 한 문장으로 출력\n"
+            )
 
         # 📡 GPT-4 호출
         response = openai.ChatCompletion.create(
@@ -106,8 +125,8 @@ class InterviewRepositoryImpl(InterviewRepository):
             ]
         )
 
-        questions_text = response.choices[0].message["content"].strip()
-        questions = [q.strip() for q in questions_text.split("\n") if q.strip()]
+        result_text = response.choices[0].message.content.strip()
+        questions = [q.strip() for q in result_text.split("\n") if q.strip()]
 
         return questions
 '''''
@@ -153,3 +172,4 @@ class InterviewRepositoryImpl(InterviewRepository):
                 "summary": summary,
                 "message": "면접이 성공적으로 종료되었습니다."
             }
+            '''''
