@@ -16,7 +16,7 @@ class FirstFollowupQuestionRequestForm(BaseModel):
     def toFirstFollowupQuestionGenerationRequest(self):
         job_name = JobCategory.get_job_name(self.topic)
         experience_level = ExperienceLevel.get_experience_level(self.experienceLevel)
-        academic_background = AcademicBackground.get_academic_background(self.academicBackground)  # ✅ 이거 추가
+        academic_background = AcademicBackground.get_academic_background(self.academicBackground)
 
         return FirstFollowupQuestionGenerationRequest(
             interviewId=self.interviewId,

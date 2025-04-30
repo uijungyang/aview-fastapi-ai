@@ -16,12 +16,12 @@ class ProjectFollowupQuestionGenerationRequestForm(BaseModel):
     answerText: str
     userToken: str
 
-    def toQuestionGenerationRequest(self):
+    def toProjectFollowupQuestionRequest(self):
         job_name = JobCategory.get_job_name(self.topic)
         project_experience = ProjectExperience.get_project_experience(self.projectExperience)
         tech_stack = TechStack.get_tech_stack_list(self.techStack)
 
-        return FirstQuestionGenerationRequest(
+        return ProjectFollowupGenerationRequest(
             interviewId=self.interviewId,
             topic=job_name,
             techStack=tech_stack,

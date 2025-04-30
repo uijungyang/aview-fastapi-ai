@@ -132,7 +132,7 @@ class InterviewRepositoryImpl(InterviewRepository):
         questions = [q.strip() for q in result_text.split("\n") if q.strip()]
 
         return questions
-'''''
+
     # 면접 종료
     def end_interview(self,
                                 session_id: str,
@@ -175,4 +175,4 @@ class InterviewRepositoryImpl(InterviewRepository):
                 "summary": summary,
                 "message": "면접이 성공적으로 종료되었습니다."
             }
-            '''''
+

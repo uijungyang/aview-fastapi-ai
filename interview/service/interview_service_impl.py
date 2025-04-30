@@ -53,7 +53,7 @@ class InterviewServiceImpl(InterviewService):
     # 프로젝트 첫질문 생성
     def generateProjectQuestion(self, request: ProjectQuestionGenerationRequest) -> dict:
         interviewId = request.interviewId
-        projectExperience = request.experienceLevel
+        projectExperience = request.projectExperience
         userToken = request.userToken
 
         print(f"💡 [service] Requesting question generation for interviewId={interviewId}")
