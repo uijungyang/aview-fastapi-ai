@@ -16,7 +16,7 @@ class InterviewService(ABC):
         pass
 
     @abstractmethod
-    def generateProjectFollowupQuestion(self, interviewId: int, questionId: int, answerText: str, userToken: str) -> dict:
+    def generateProjectFollowupQuestion(self, request: dict) -> dict:
         pass
 
     @abstractmethod

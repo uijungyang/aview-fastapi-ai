@@ -3,6 +3,7 @@ from typing import List, Dict
 from interview.service.interview_service import InterviewService
 from interview.repository.interview_repository_impl import InterviewRepositoryImpl
 from interview.service.request.first_followup_question_generation_request import FirstFollowupQuestionGenerationRequest
+from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
 from interview.service.request.project_question_generation_request import ProjectQuestionGenerationRequest
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
 
@@ -67,13 +68,18 @@ class InterviewServiceImpl(InterviewService):
         }
 
 
-    def generateProjectFollowupQuestion(
-            self, interviewId: int, questionId: int, answerText: str, userToken: str
-    ) -> dict:
+    def generateProjectFollowupQuestion(self, request: ProjectFollowupGenerationRequest) -> dict:
+        interviewId = request.interviewId
+        topic: request.topic
+        techStack: request.techStack
+        projectExperience = request.experienceLevel
+        questionId = request.questionId
+        answerText = request.answerText
+        userToken = request.userToken
         print(f"💡 [service] Requesting follow-up question for interviewId={interviewId}, questionId={questionId}")
 
         followup_question = self.interviewRepository.generateProjectFollowupQuestion(
-            interviewId, questionId, answerText, userToken
+            interviewId, topic, techStack, projectExperience, questionId, answerText, userToken
         )
 
         return {

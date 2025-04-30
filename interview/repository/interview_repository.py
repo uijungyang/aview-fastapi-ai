@@ -35,13 +35,15 @@ class InterviewRepository(ABC):
         pass
 
     @abstractmethod
-    def generateProjectFollowupQuestion(self,
+    def generateProjectFollowupQuestion(
+            self,
             interviewId: int,
-            jobCategory: int,
-            experienceLevel: int,
-            tech_stack: int,
-            projectExperience: int,
-            userToken: str
+            topic: str,
+            techStack: list[str],
+            projectExperience: str,
+            questionId: int,
+            answerText: str,
+            userToken: str,
     ) -> list[str]:
         pass
 
