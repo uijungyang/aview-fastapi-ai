@@ -45,9 +45,10 @@ class InterviewRepositoryImpl(InterviewRepository):
             f"[자기소개 답변]: {answerText}\n\n"
             f"요청사항:\n"
             f"- 질문은 총 2개\n"
+            f"- [직무], [경력], [학력 배경] 관련 질문만 하고, [프로젝트] 질문은 하지마"
             f"- 자기소개 내용과 학력에 기반한 궁금한 점을 명확하게 질문해\n"
-            f"- 학력에 대한 질문은 대학교 이름을 물어보지 말고, 어느 학과를 나왔고, 어떤 부분을 공부했냐 이런식으로 질문해줘"
-            f"- 질문만 출력하고, 줄바꿈(\\n)으로 구분해줘\n"
+            f"- 학력에 대한 질문은 대학교 이름을 물어보지 말고, 어느 학과를 나왔고, '어떤 부분을 공부했습니까?' 이런식으로 질문해줘"
+            f"- 질문만 출력하고, 줄바꿈(\n)으로 구분해줘\n"
             f"- 번호 없이, 설명은 절대 포함하지 마"
         )
 
@@ -85,35 +86,37 @@ class InterviewRepositoryImpl(InterviewRepository):
     def generateProjectFollowupQuestion(
             self,
             interviewId: int,
-            jobCategory: int,
-            experienceLevel: int,
-            tech_stack: int,
-            projectExperience: int,
-            userToken: str
+            topic: str,
+            techStack: list[str],
+            projectExperience: str,
+            questionId: int,
+            answerText: str,
+            userToken: str,
     ) -> list[str]:
         print(f"📡 [AI Server] Generating 5 questions for interviewId={interviewId}, userToken={userToken}")
 
         # 🎯 프롬프트 정의
         if projectExperience == "프로젝트 경험 있음":
             prompt = (
-                "너는 기술 면접관이야. 다음 면접자 정보를 기반으로, 맞춤형 기술 면접 질문을 생성해줘.\n\n"
+                "너는 기술 면접관이야. 다음 면접자의 이전 답변과 질문 ID를 참고해서, 그에 대한 심화 질문 또는 꼬리 질문을 하나 생성해줘.\n\n"
                 "[프로젝트 경험 유무]: 있음\n"
+                "- 이전 질문 ID(questionId)와 면접자의 답변(answerText)를 기반으로 관련성 높은 후속 질문을 생성해야 해.\n\n"
                 "요청사항:\n"
-                "- 면접자는 총 5개의 질문을 받게 됩니다.\n"
-                "- 질문 하나 → 답변 → 다음 질문 순으로 진행합니다.\n"
-                "- 지금은 그 중 첫 번째 질문만 출력하세요.\n"
-                "- 질문은 짧고 명확하게, 설명 없이 한 문장으로 출력하세요.\n"
+                "- 면접자는 총 2개의 질문을 받게 됩니다.\n"
+                "- 질문 하나 → 답변 → 다음 질문 순으로 진행됩니다.\n"
+                "- 지금은 그 중 두 번째 질문을 생성하세요.\n"
+                "- 질문은 짧고 명확하게, 설명 없이 한 문장으로 출력하세요."
             )
         else:
             prompt = (
-                "너는 기술 면접관이야. 다음 면접자 정보를 기반으로, 맞춤형 면접 질문을 하나 생성해줘.\n\n"
+                "너는 기술 면접관이야. 다음 면접자의 이전 답변과 질문 ID를 참고해서, 그에 대한 심화 질문 또는 꼬리 질문을 하나 생성해줘.\n\n"
                 "[프로젝트 경험 유무]: 없음\n"
+                "- 이전 질문 ID(questionId)와 면접자의 답변(answerText)를 기반으로 관련성 높은 후속 질문을 생성해야 해.\n\n"
                 "요청사항:\n"
-                "- 질문은 총 5개 중 하나씩 출력할 것 (이번에 출력할 질문은 1개)\n"
-                "- 프로젝트 경험이 없으므로, 직무와 유사한 활동을 했는지 확인하는 질문을 포함할 것\n"
-                "- 질문은 짧고 명확하게\n"
-                "- 질문만 출력하고 설명은 생략\n"
-                "- 줄바꿈 없이 한 문장으로 출력\n"
+                "- 면접자는 총 2개의 질문을 받게 됩니다.\n"
+                "- 질문 하나 → 답변 → 다음 질문 순으로 진행됩니다.\n"
+                "- 지금은 그 중 두 번째 질문을 생성하세요.\n"
+                "- 질문은 짧고 명확하게, 설명 없이 한 문장으로 출력하세요."
             )
 
         # 📡 GPT-4 호출

@@ -22,7 +22,7 @@ class FirstFollowupQuestionRequestForm(BaseModel):
             interviewId=self.interviewId,
             topic=job_name,
             experienceLevel=experience_level,
-            academicBackground=academic_background,  # ✅ 이렇게 넘기기
+            academicBackground=academic_background,
             questionId=self.questionId,
             answerText=self.answerText,
             userToken=self.userToken,

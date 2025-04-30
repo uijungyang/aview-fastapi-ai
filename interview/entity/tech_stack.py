@@ -1,35 +1,54 @@
 from enum import Enum
 
 class TechStack(Enum):
-    FULLSTACK = 1
-    BACKEND_SERVER = 2
-    FRONT = 3
-    WEB = 4
-    FLUTTER =5
-    JAVA = 6
-    JAVASCRIPT = 7
-    PYTHON=8
-    VUE = 9
-    API=10
-    MYSQL=11
-    AWS=12
-    REACT=13
-    ASP=14
-    ANGULAR=15
-    BOOTSTRAP=16
-    NODE_JS=17
-    JQUERY=18
-    PHP=19
-    JSP=20
-    GRAPH_QL=21
-    HTML5=22
+    FULLSTACK: 1
+    BACKEND_SERVER: 2
+    FRONTEND: 3
+    WEB: 4
+    FLUTTER: 5
+    JAVA: 6
+    JAVASCRIPT: 7
+    PYTHON: 8
+    VUE_JS: 9
+    API: 10
+    MYSQL: 11
+    AWS: 12
+    REACTJS: 13
+    ASP: 14
+    ANGULAR: 15
+    BOOTSTRAP: 16
+    NODE_JS: 17
+    JQUERY: 18
+    PHP: 19
+    JSP: 20
+    GRAPHQL: 21
+    HTML5: 22
 
-    # 매핑된 사람 친화적인 표현을 반환
     @classmethod
-    def get_teck_stack(cls, teckStackId: int) -> str:
+    def get_tech_stack_list(cls, techStack: list[int]) -> list[str]:
         mapping = {
-            0: "있음",
-            1: "없음",
+            1: "FULLSTACK",
+            2: "BACKEND_SERVER",
+            3: "FRONTEND",
+            4: "WEB",
+            5: "FLUTTER",
+            6: "JAVA",
+            7: "JAVASCRIPT",
+            8: "PYTHON",
+            9: "VUE_JS",
+            10: "API",
+            11: "MYSQL",
+            12: "AWS",
+            13: "REACTJS",
+            14: "ASP",
+            15: "ANGULAR",
+            16: "BOOTSTRAP",
+            17: "NODE_JS",
+            18: "JQUERY",
+            19: "PHP",
+            20: "JSP",
+            21: "GRAPHQL",
+            22: "HTML5"
         }
-        return mapping.get(teckStackId, "기술스택 해당사항 없음")
+        return [mapping.get(tid, "기술스택 해당사항 없음") for tid in techStack]
 
