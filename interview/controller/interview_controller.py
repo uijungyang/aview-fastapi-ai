@@ -55,10 +55,7 @@ async def generateFirstFollowupQuestions(
     print(f"🎯 [controller] Received generateFirstFollowupQuestions() requestForm: {requestForm}")
 
     try:
-        # 여기에 질문 생성 로직 호출
-        # response = interviewService.generateFirstFollowupQuestions(
-        #    requestForm.toFirstFollowupQuestionGenerationRequest()
-        response = interviewService.generateFirstFollowupQuestions(requestForm.toFirstFollowupQuestionGenerationRequest())
+        response = interviewService.generateFirstFollowupQuestions(requestForm.FirstFollowupQuestionGenerationRequest())
 
         return JSONResponse(
             content=response,
@@ -82,7 +79,7 @@ async def generateProjectQuestion(
     try:
         # 프로젝트 고정 질문 생성 로직 호출
         response = interviewService.generateProjectQuestion(
-            requestForm.toProjectQuestionGenerationRequest
+            requestForm.ProjectQuestionGenerationRequest()
         )
 
         return JSONResponse(
@@ -106,10 +103,7 @@ async def generateProjectFollowupQuestion(
 
     try:
         response = interviewService.generateProjectFollowupQuestion(
-            interviewId=requestForm.interviewId,
-            questionId=requestForm.questionId,
-            answerText=requestForm.answerText,
-            userToken=requestForm.userToken
+            requestForm.ProjectFollowupGenerationRequest
         )
 
         return JSONResponse(

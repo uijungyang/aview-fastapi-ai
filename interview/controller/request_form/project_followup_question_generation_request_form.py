@@ -2,27 +2,31 @@ from openai import BaseModel
 
 from interview.entity.experience_level import ExperienceLevel
 from interview.entity.job_category import JobCategory
+from interview.entity.project_experience import ProjectExperience
+from interview.entity.tech_stack import TechStack
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
 
 
 class ProjectFollowupQuestionGenerationRequestForm(BaseModel):
     interviewId: int
-    topic: int # 숫자 값으로 받기
-    experienceLevel: int  # 숫자 값으로 받기
-    tech_stack: int
-    projectExperience: int   # 이건 꼭 질문으로 넣어야함
+    topic: int
+    techStack: list[int]
+    projectExperience: int
+    questionId: int
+    answerText: str
     userToken: str
 
-    # def toQuestionGenerationRequest(self):
-    #     job_name = JobCategory.get_job_name(self.topic)  # 변경된 이름 반영
-    #     experience_level = ExperienceLevel.get_experience_level(self.experienceLevel)  # 변경된 이름 반영
     def toQuestionGenerationRequest(self):
         job_name = JobCategory.get_job_name(self.topic)
-        experience_level = ExperienceLevel.get_experience_level(self.experienceLevel)
+        project_experience = ProjectExperience.get_project_experience(self.projectExperience)
+        tech_stack = TechStack.get_tech_stack_list(self.techStack)
 
         return FirstQuestionGenerationRequest(
             interviewId=self.interviewId,
             topic=job_name,
-            experienceLevel=experience_level,
+            techStack=tech_stack,
+            projectExperience=project_experience,
+            questionId=self.questionId,
+            answerText=self.answerText,
             userToken=self.userToken,
         )
