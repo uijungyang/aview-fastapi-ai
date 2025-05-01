@@ -71,9 +71,9 @@ class InterviewServiceImpl(InterviewService):
 
     def generateProjectFollowupQuestion(self, request: ProjectFollowupGenerationRequest) -> dict:
         interviewId = request.interviewId
-        topic: request.topic
-        techStack: request.techStack
-        projectExperience = request.experienceLevel
+        topic = request.topic
+        techStack = request.techStack
+        projectExperience = request.projectExperience
         questionId = request.questionId
         answerText = request.answerText
         userToken = request.userToken
