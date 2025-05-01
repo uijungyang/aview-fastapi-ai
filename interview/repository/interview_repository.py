@@ -50,7 +50,7 @@ class InterviewRepository(ABC):
 
     @abstractmethod
     async def end_interview(self,
-        sessionId: str,
+        interview_id: str,
         context: Dict[str, str],
         questions: List[str],
         answers: List[str]

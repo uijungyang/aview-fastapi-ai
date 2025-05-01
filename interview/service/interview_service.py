@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
+from interview.service.request.question_generate_endInterview_request import EndInterviewRequest
 
 
 class InterviewService(ABC):
@@ -20,5 +21,5 @@ class InterviewService(ABC):
         pass
 
     @abstractmethod
-    def end_interview(self, sessionId: str, context: Dict[str, str], questions: List[str], answers: List[str]) -> Dict:
+    def end_interview(self, request: EndInterviewRequest) -> str:
         pass

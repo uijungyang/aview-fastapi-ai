@@ -1,11 +1,23 @@
-from typing import List, Dict
 from pydantic import BaseModel
+from typing import List
 
-class QuestionGenerationEndInterviewRequestForm(BaseModel):          # 종료용
-    sessionId: str
-    context: Dict[str, str]
+from interview.service.request.question_generate_endInterview_request import EndInterviewRequest
+
+
+class QuestionGenerationEndInterviewRequestForm(BaseModel):
+    interviewId: int
+    context: str
     questions: List[str]
     answers: List[str]
+
+    def toEndInterviewRequest(self) -> EndInterviewRequest:
+        return EndInterviewRequest(
+            interview_id=self.interviewId,
+            context=self.context,
+            questions=self.questions,
+            answers=self.answers
+        )
+
 
 
     ''''
