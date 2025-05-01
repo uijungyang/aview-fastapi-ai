@@ -99,7 +99,7 @@ async def generateProjectFollowupQuestion(
     requestForm: ProjectFollowupQuestionGenerationRequestForm,
     interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
-    print(f"🎯 [controller] Received generateFollowupInterviewQuestion() requestForm: {requestForm}")
+    print(f"🎯 [controller] Received generateProjectFollowupQuestion() requestForm: {requestForm}")
 
     try:
         response = interviewService.generateProjectFollowupQuestion(
@@ -113,10 +113,8 @@ async def generateProjectFollowupQuestion(
         )
 
     except Exception as e:
-        print(f"프로젝트 꼬리질문 Error in generateFollowupInterviewQuestion(): {str(e)}")
+        print(f"프로젝트 꼬리질문 Error in generateProjectFollowupQuestion(): {str(e)}")
         raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
-
-
 
 
 
@@ -138,7 +136,6 @@ async def end_interview(
     except Exception as e:
         print(f"❌ Error in generateInterviewQuestion(): {str(e)}")
         raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
-
 
 
 # 평가 코드 추가 (예정)

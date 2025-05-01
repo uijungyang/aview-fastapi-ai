@@ -1,6 +1,6 @@
 from enum import Enum
 
-class TechStack(Enum):
+class InterviewTechStack(Enum):
     FULLSTACK: 1
     BACKEND_SERVER: 2
     FRONTEND: 3
@@ -25,7 +25,7 @@ class TechStack(Enum):
     HTML5: 22
 
     @classmethod
-    def get_tech_stack_list(cls, techStack: list[int]) -> list[str]:
+    def get_tech_stack_list(cls, tech_stack_id: list[int]) -> list[str]:
         mapping = {
             1: "FULLSTACK",
             2: "BACKEND_SERVER",
@@ -50,5 +50,5 @@ class TechStack(Enum):
             21: "GRAPHQL",
             22: "HTML5"
         }
-        return [mapping.get(tid, "기술스택 해당사항 없음") for tid in techStack]
+        return [mapping.get(tid, "기술스택 해당사항 없음") for tid in tech_stack_id]
 
