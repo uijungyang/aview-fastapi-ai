@@ -1,12 +1,13 @@
 from typing import List, Dict
 
+from interview.entity.end_of_interview import EndOfInterview
 from interview.service.interview_service import InterviewService
 from interview.repository.interview_repository_impl import InterviewRepositoryImpl
+from interview.service.request.question_generate_endInterview_request import EndInterviewRequest
 from interview.service.request.first_followup_question_generation_request import FirstFollowupQuestionGenerationRequest
-from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
 from interview.service.request.project_question_generation_request import ProjectQuestionGenerationRequest
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
-
+from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
 
 class InterviewServiceImpl(InterviewService):
     def __init__(self):
@@ -87,11 +88,16 @@ class InterviewServiceImpl(InterviewService):
             "questions": followup_question
         }
 
+    def end_interview(self, request: EndInterviewRequest) -> str:
+        print(f"📥 [Service] end_interview() 호출 - interview_id={request.interview_id}")
 
-    def end_interview(self,
-        sessionId: str,
-        context: Dict[str, str],
-        questions: List[str],
-        answers: List[str]
-    ) -> Dict:
-        return self.interviewRepository.end_interview(sessionId, context, questions, answers)
+        interview = EndOfInterview(
+            interview_id=request.interview_id,
+            context=request.context,
+            questions=request.questions,
+            answers=request.answers
+        )
+
+        self.interviewRepository.save_end_interview(interview)
+
+        return f"면접 종료 - 총 {len(request.questions)}개의 질문에 답변하셨습니다."

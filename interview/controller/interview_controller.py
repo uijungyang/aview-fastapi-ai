@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -122,20 +122,33 @@ async def generateProjectFollowupQuestion(
 @interviewRouter.post("/interview/question/end_interview")
 async def end_interview(
         requestForm: QuestionGenerationEndInterviewRequestForm,
+        request: Request,  # ✅ userToken 추출용
         interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
     try:
-        summary = interviewService.end_interview(
-            sessionId=requestForm.sessionId,
-            context=requestForm.context,
-            questions=requestForm.questions,
-            answers=requestForm.answers
+        # 1. RequestForm → 내부 VO
+        dto: EndInterviewRequest = requestForm.toEndInterviewRequest()
+
+        # 2. 헤더에서 userToken 추출 (예시: 소셜 로그인 후 백에서 만든 식별자)
+        user_token = request.headers.get("userToken")
+        if not user_token:
+            raise HTTPException(status_code=401, detail="userToken 헤더가 필요합니다.")
+
+        # 3. 인터뷰 종료 처리
+        answer = interviewService.end_interview(dto)
+
+        # 4. Redis 세션 정리
+        await redis_manager.reset_count(user_token, dto.interview_id)
+        await redis_manager.mark_session_done(user_token, dto.interview_id)
+
+        # 5. 결과 반환
+        return JSONResponse(
+            content={"message": "면접 종료", "answer": answer},
+            status_code=status.HTTP_200_OK
         )
-        return JSONResponse(content={"message": "면접 종료", "summary": summary}, status_code=status.HTTP_200_OK)
 
     except Exception as e:
-        print(f"❌ Error in generateInterviewQuestion(): {str(e)}")
+        print(f"❌ [Controller] end_interview 오류: {str(e)}")
         raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
-
 
 # 평가 코드 추가 (예정)
