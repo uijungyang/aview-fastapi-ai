@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 import uvicorn
 import os
@@ -30,6 +31,11 @@ app.include_router(openaiApiRouter)
 app.include_router(interviewRouter)
 app.include_router(testRouter)
 app.include_router(polyglotRouter)
+
+
+@app.get("/robots.txt", include_in_schema=False)
+async def robots():
+    return FileResponse("robots.txt", media_type="text/plain")
 
 
 # FASTAPI_PORT를 통해서 이 서비스가 구동되는 포트 번호를 지정
