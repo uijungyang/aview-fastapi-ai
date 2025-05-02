@@ -34,22 +34,20 @@ class InterviewRepositoryImpl(InterviewRepository):
     ) -> list[str]:
         print(f" [repository] Generating intro follow-up questions for interviewId={interviewId},userToken={userToken}")
 
-        # GPT 프롬프트 구성
         prompt = (
-            f"너는 IT 기업의 면접관이야. 아래 면접자의 기본정보(직무, 경력)와 자기소개 답변, 학력 배경을 참고해서, 관련된 꼬리 질문 2개를 만들어줘.\n\n"
-            f"- 면접자를 부를 때 '지원자님'이라고 해"
-            f"[직무]: {topic}"
-            f"[경력]: {experienceLevel}"
+            f"너는 IT 기업의 면접관이야. 아래 면접자의 기본 정보와 자기소개 답변을 참고해, 직무·경력·학력 배경과 관련된 꼬리 질문을 하나 생성해줘.\n\n"
+            f"[직무]: {topic}\n"
+            f"[경력]: {experienceLevel}\n"
             f"[학력 배경]: {academicBackground}\n"
-            f"[첫 질문 번호]: {questionId}"
+            f"[첫 질문 번호]: {questionId}\n"
             f"[자기소개 답변]: {answerText}\n\n"
             f"요청사항:\n"
-            f"- 질문은 총 2개\n"
-            f"- [직무], [경력], [학력 배경] 관련 질문만 하고, [프로젝트] 질문은 하지마"
-            f"- 자기소개 내용과 학력에 기반한 궁금한 점을 명확하게 질문해\n"
-            f"- 학력에 대한 질문은 대학교 이름을 물어보지 말고, 어느 학과를 나왔고, '어떤 부분을 공부했습니까?' 이런식으로 질문해줘"
-            f"- 질문만 출력하고, 줄바꿈(\n)으로 구분해줘\n"
-            f"- 번호 없이, 설명은 절대 포함하지 마"
+            f"- 질문은 반드시 **짧고 명확한 한 문장**으로 작성할 것\n"
+            f"- **복합 질문 금지**: 하나의 주제만 물어볼 것\n"
+            f"- **설명, 인삿말, 줄바꿈, 기타 문장 포함 금지**\n"
+            f"- 학력 관련 질문 시, 대학 이름은 묻지 말고 전공이나 공부한 내용을 기준으로 작성\n"
+            f"- **[프로젝트] 관련 질문은 하지 말 것**\n"
+            f"- 출력은 질문 한 문장만, 아무 설명도 붙이지 말고 출력할 것"
         )
 
         # GPT 호출
@@ -93,37 +91,38 @@ class InterviewRepositoryImpl(InterviewRepository):
             answerText: str,
             userToken: str,
     ) -> list[str]:
+
         print(f"📡 [AI Server] Generating 5 questions for interviewId={interviewId}, userToken={userToken}")
 
         # 🎯 프롬프트 정의
         if projectExperience == "프로젝트 경험 있음":
             prompt = (
-                "너는 기술 면접관이야. 다음 면접자의 이전 답변과 질문 ID를 참고해서, 그에 대한 심화 질문 또는 꼬리 질문을 하나 생성해줘.\n\n"
+                "너는 기술 면접관이야. 아래 면접자의 이전 답변과 질문 ID를 참고해서, 그에 대한 심화 질문 또는 꼬리 질문을 하나 생성해줘.\n\n"
                 "[프로젝트 경험 유무]: 있음\n"
-                "- 이전 질문 ID(questionId)와 면접자의 답변(answerText)를 기반으로 관련성 높은 후속 질문을 생성해야 해.\n\n"
+                "- 이전 질문 ID(questionId)와 면접자의 답변(answerText)를 기반으로 관련성 높은 후속 질문을 만들어야 해.\n\n"
                 "요청사항:\n"
-                "- 면접자는 총 2개의 질문을 받게 됩니다.\n"
-                "- 질문 하나 → 답변 → 다음 질문 순으로 진행됩니다.\n"
-                "- 지금은 그 중 두 번째 질문을 생성하세요.\n"
-                "- 질문은 짧고 명확하게, 설명 없이 한 문장으로 출력하세요."
+                "- 질문은 단 하나만 생성해.\n"
+                "- 질문은 반드시 짧고 명확한 **한 문장**으로 구성할 것.\n"
+                "- 복합 질문은 금지하며, 하나의 주제만 물어볼 것.\n"
+                "- 설명이나 추가 문장은 절대 포함하지 말고, 줄바꿈 없이 출력할 것."
             )
         else:
             prompt = (
-                "너는 기술 면접관이야. 다음 면접자의 이전 답변과 질문 ID를 참고해서, 그에 대한 심화 질문 또는 꼬리 질문을 하나 생성해줘.\n\n"
+                "너는 기술 면접관이야. 아래 면접자의 이전 답변과 질문 ID를 참고해서, 그에 대한 심화 질문 또는 꼬리 질문을 하나 생성해줘.\n\n"
                 "[프로젝트 경험 유무]: 없음\n"
-                "- 이전 질문 ID(questionId)와 면접자의 답변(answerText)를 기반으로 관련성 높은 후속 질문을 생성해야 해.\n\n"
+                "- 이전 질문 ID(questionId)와 면접자의 답변(answerText)를 기반으로 관련성 높은 후속 질문을 만들어야 해.\n\n"
                 "요청사항:\n"
-                "- 면접자는 총 2개의 질문을 받게 됩니다.\n"
-                "- 질문 하나 → 답변 → 다음 질문 순으로 진행됩니다.\n"
-                "- 지금은 그 중 두 번째 질문을 생성하세요.\n"
-                "- 질문은 짧고 명확하게, 설명 없이 한 문장으로 출력하세요."
+                "- 질문은 단 하나만 생성해.\n"
+                "- 질문은 반드시 짧고 명확한 **한 문장**으로 구성할 것.\n"
+                "- 복합 질문은 금지하며, 하나의 주제만 물어볼 것.\n"
+                "- 설명이나 추가 문장은 절대 포함하지 말고, 줄바꿈 없이 출력할 것."
             )
 
         # 📡 GPT-4 호출
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "너는 IT 기업의 실제 면접관이야."},
+                {"role": "system", "content": "너는 진짜 면접관처럼 질문을 생성하는 역할이야."},
                 {"role": "user", "content": prompt}
             ]
         )

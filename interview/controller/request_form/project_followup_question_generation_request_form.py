@@ -1,10 +1,10 @@
 from openai import BaseModel
 
-from interview.entity.experience_level import ExperienceLevel
 from interview.entity.job_category import JobCategory
 from interview.entity.project_experience import ProjectExperience
-from interview.entity.tech_stack import TechStack
-from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
+from interview.entity.interview_tech_stack import InterviewTechStack
+from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
+
 
 
 class ProjectFollowupQuestionGenerationRequestForm(BaseModel):
@@ -19,7 +19,7 @@ class ProjectFollowupQuestionGenerationRequestForm(BaseModel):
     def toProjectFollowupQuestionRequest(self):
         job_name = JobCategory.get_job_name(self.topic)
         project_experience = ProjectExperience.get_project_experience(self.projectExperience)
-        tech_stack = TechStack.get_tech_stack_list(self.techStack)
+        tech_stack = InterviewTechStack.get_tech_stack_list(self.techStack)
 
         return ProjectFollowupGenerationRequest(
             interviewId=self.interviewId,
