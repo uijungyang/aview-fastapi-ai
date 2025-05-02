@@ -12,6 +12,7 @@ from config.cors_config import CorsConfig
 from openai_api.controller.openai_api_controller import openaiApiRouter
 from polyglot_temp.controller.polyglot_controller import polyglotRouter
 from test.controller.test_controller import testRouter
+from api import rss
 
 # sys.path에 경로 추가해서 외부 모듈을 import 가능하게 함
 #sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'template'))
@@ -31,6 +32,7 @@ app.include_router(openaiApiRouter)
 app.include_router(interviewRouter)
 app.include_router(testRouter)
 app.include_router(polyglotRouter)
+app.include_router(rss.router)
 
 
 @app.get("/robots.txt", include_in_schema=False)
