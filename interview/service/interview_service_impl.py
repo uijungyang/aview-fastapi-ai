@@ -8,6 +8,8 @@ from interview.service.request.first_followup_question_generation_request import
 from interview.service.request.project_question_generation_request import ProjectQuestionGenerationRequest
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
 from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
+#from vosk_api.example.test_gpu_batch import results
+
 
 class InterviewServiceImpl(InterviewService):
     def __init__(self):
@@ -89,15 +91,20 @@ class InterviewServiceImpl(InterviewService):
         }
 
     def end_interview(self, request: EndInterviewRequest) -> str:
-        print(f"📥 [Service] end_interview() 호출 - interview_id={request.interview_id}")
+        print(f"📥 [Service] end_interview() 호출 - interviewId={request.interviewId}")
 
+        # 1. 종료 정보 저장
         interview = EndOfInterview(
-            interview_id=request.interview_id,
-            context=request.context,
-            questions=request.questions,
-            answers=request.answers
+            interview_id=request.interviewId,
+            user_token=request.userToken,
+            question_id=request.questionId,
+            answer_text=request.answerText,
+            topic=request.topic,
+            experience_level=request.experienceLevel,
+            project_experience=request.projectExperience,
+            academic_background=request.academicBackground,
+            tech_stack=request.interviewTechStack
         )
+        print("✅ 면접 종료 정보 저장 완료")
 
-        self.interviewRepository.save_end_interview(interview)
-
-        return f"면접 종료 - 총 {len(request.questions)}개의 질문에 답변하셨습니다."
+        return "면접 종료가 정상적으로 처리되었습니다."

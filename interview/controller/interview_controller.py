@@ -120,7 +120,7 @@ async def generateProjectFollowupQuestion(
 
 # 면접 종료 : 최종적으로 모든 질문 답변 저장
 @interviewRouter.post("/interview/question/end_interview")
-async def end_interview(
+async def endInterview(
         requestForm: QuestionGenerationEndInterviewRequestForm,
         request: Request,  # ✅ userToken 추출용
         interviewService: InterviewServiceImpl = Depends(injectInterviewService)
@@ -130,16 +130,11 @@ async def end_interview(
         dto: EndInterviewRequest = requestForm.toEndInterviewRequest()
 
         # 2. 헤더에서 userToken 추출 (예시: 소셜 로그인 후 백에서 만든 식별자)
-        user_token = request.headers.get("userToken")
-        if not user_token:
-            raise HTTPException(status_code=401, detail="userToken 헤더가 필요합니다.")
+        user_token = requestForm.userToken
 
         # 3. 인터뷰 종료 처리
         answer = interviewService.end_interview(dto)
 
-        # 4. Redis 세션 정리
-        await redis_manager.reset_count(user_token, dto.interview_id)
-        await redis_manager.mark_session_done(user_token, dto.interview_id)
 
         # 5. 결과 반환
         return JSONResponse(
