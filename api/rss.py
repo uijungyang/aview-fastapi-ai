@@ -33,7 +33,7 @@ def rss_feed():
         <channel>
             <title>JOBSTICK</title>
             <link>https://job-stick.com</link>
-            <description>JOBSTICK은 한국 IT 기업 분석 보고서와 AI 모의면접 서비스를 제공하여 보다 많은 사람들에게 양질의 정보를 공유하고 도움을 드릴 수 있도록 최선을 다하겠습니다.</description>
+            <description>JOBSTICK - AI 모의 기술 면접을 통해 취업 경쟁력을 높이세요!.</description>
             {rss_items}
         </channel>
     </rss>"""
