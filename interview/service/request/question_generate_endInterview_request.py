@@ -2,7 +2,12 @@ from pydantic import BaseModel
 from typing import List
 
 class EndInterviewRequest(BaseModel):
-    interview_id: int
-    context: str
-    questions: List[str]
-    answers: List[str]
+    userToken: str
+    interviewId: int
+    questionId: int
+    answerText: str
+    topic: int
+    experienceLevel: int
+    projectExperience: int
+    academicBackground: int
+    interviewTechStack: List[int]
