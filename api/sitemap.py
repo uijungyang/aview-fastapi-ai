@@ -18,7 +18,6 @@ def sitemap():
         "/account/register",
         "/account/withdraw",
         "/aiInterview",
-        "/aiInterview",
         "/aiInterview/llmTest",
         "/aiInterview/result",
         # "/assets",
@@ -36,7 +35,7 @@ def sitemap():
         "/management",
         # "/model",
         # "model-spk",
-        "/naverAuthentication",
+        # "/naverAuthentication",
         "/navigatorBar",
         "/order",
         "/order/list",
@@ -65,7 +64,7 @@ def sitemap():
         f"""
         <url>
             <loc>https://job-stick.com{url}</loc>
-            <lastmod>{datetime.utcnow().date()}</lastmode>
+            <lastmod>{datetime.utcnow().date()}</lastmod>
             <changefreq>weekly</changefreq>
             <priority>0.8</priority>
         </url>
@@ -73,7 +72,7 @@ def sitemap():
     ])
 
     sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns>"http://www.sitemaps.org/schemas/sitemap/0.9">
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     {url_entries}"""
 
     return Response(content=sitemap, media_type="application/xml")
