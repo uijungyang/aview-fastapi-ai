@@ -12,6 +12,7 @@ from config.cors_config import CorsConfig
 from openai_api.controller.openai_api_controller import openaiApiRouter
 from polyglot_temp.controller.polyglot_controller import polyglotRouter
 from test.controller.test_controller import testRouter
+from chroma.upload_controller import uploadRouter
 from api import rss
 from api import sitemap
 
@@ -32,6 +33,7 @@ CorsConfig.middlewareConfig(app)
 app.include_router(openaiApiRouter)
 app.include_router(interviewRouter)
 app.include_router(testRouter)
+app.include_router(uploadRouter, prefix="/chroma")
 app.include_router(polyglotRouter)
 app.include_router(rss.router)
 app.include_router(sitemap.router)
