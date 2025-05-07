@@ -1,3 +1,4 @@
+import json
 from typing import List, Dict
 
 from interview.entity.end_of_interview import EndOfInterview
@@ -8,7 +9,6 @@ from interview.service.request.first_followup_question_generation_request import
 from interview.service.request.project_question_generation_request import ProjectQuestionGenerationRequest
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
 from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
-#from vosk_api.example.test_gpu_batch import results
 
 
 class InterviewServiceImpl(InterviewService):
@@ -24,13 +24,16 @@ class InterviewServiceImpl(InterviewService):
 
         print(f"💡 [service] Requesting question generation for interviewId={interviewId}")
 
-        questions = self.interviewRepository.generateQuestions(
+        questionData = self.interviewRepository.generateQuestions(
             interviewId, topic, experienceLevel, userToken
         )
+        if isinstance(questionData, str):
+            questionData = json.loads(questionData)
 
         return {
             "interviewId": interviewId,
-            "questions": questions
+            "question": questionData["question"],
+            "questionId": 1
         }
 
     def generateFirstFollowupQuestions(self, request: FirstFollowupQuestionGenerationRequest) -> dict:
@@ -45,12 +48,13 @@ class InterviewServiceImpl(InterviewService):
         print(f"💡 [service] Requesting first follow-up questions for interviewId={interviewId}")
 
         questions = self.interviewRepository.generateFirstFollowup(
-            interviewId, topic, experienceLevel, academicBackground,questionId, answerText, userToken
+            interviewId, topic, experienceLevel, academicBackground, questionId, answerText, userToken
         )
-
+        question_ids = [questionId + i + 1 for i in range(len(questions))]
         return {
             "interviewId": interviewId,
-            "questions": questions
+            "questions": questions,
+            "questionIds": question_ids
         }
 
     # 프로젝트 첫질문 생성
@@ -58,6 +62,7 @@ class InterviewServiceImpl(InterviewService):
         interviewId = request.interviewId
         projectExperience = request.projectExperience
         userToken = request.userToken
+        questionId = request.questionId
 
         print(f"💡 [service] Requesting question generation for interviewId={interviewId}")
 
@@ -67,9 +72,9 @@ class InterviewServiceImpl(InterviewService):
 
         return {
             "interviewId": interviewId,
-            "questions": questions
+            "question": questions,
+            "questionId": questionId + 1
         }
-
 
     def generateProjectFollowupQuestion(self, request: ProjectFollowupGenerationRequest) -> dict:
         interviewId = request.interviewId
@@ -84,10 +89,11 @@ class InterviewServiceImpl(InterviewService):
         followup_question = self.interviewRepository.generateProjectFollowupQuestion(
             interviewId, topic, techStack, projectExperience, questionId, answerText, userToken
         )
-
+        question_ids = [questionId + i + 1 for i in range(len(followup_question))]
         return {
             "interviewId": interviewId,
-            "questions": followup_question
+            "questions": followup_question,
+            "questionIds": question_ids
         }
 
     def end_interview(self, request: EndInterviewRequest) -> str:
@@ -105,6 +111,20 @@ class InterviewServiceImpl(InterviewService):
             academic_background=request.academicBackground,
             tech_stack=request.interviewTechStack
         )
-        print("✅ 면접 종료 정보 저장 완료")
 
-        return "면접 종료가 정상적으로 처리되었습니다."
+        context = {
+            "userToken": request.userToken,
+            "topic": request.topic,
+            "experienceLevel": request.experienceLevel,
+            "projectExperience": request.projectExperience,
+            "acdemicBackground": request.academicBackground,
+            "techStack": request.interviewTechStack,
+        }
+        interviewResult = self.interviewRepository.end_interview(
+            interview,
+            context,
+            request.questions,
+            request.answers
+        )
+        print(f"{interviewResult}")
+        return interviewResult

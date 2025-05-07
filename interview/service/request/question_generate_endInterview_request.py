@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict
 
 class EndInterviewRequest(BaseModel):
     userToken: str
@@ -11,3 +11,7 @@ class EndInterviewRequest(BaseModel):
     projectExperience: int
     academicBackground: int
     interviewTechStack: List[int]
+    # 요약 생성을 위한
+    context: Dict[str, str]
+    questions: List[str]
+    answers: List[str]

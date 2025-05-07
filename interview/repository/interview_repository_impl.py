@@ -16,11 +16,13 @@ class InterviewRepositoryImpl(InterviewRepository):
 
         # 고정질문
         # 자기소개로 개인정보 (이름과 나이, 학교 등등) 얻기 -> 이 정보는 다음 답변에 저장
-        return (
-            f"{topic}의 {experienceLevel}분야에 지원해주셔서 감사합니다. "
-            f"저는 AI 면접관입니다."
-            f" 우선 지원자분 자기소개 부탁드립니다."
-        )
+        return {
+            "question": (
+                f"{topic}의 {experienceLevel}분야에 지원해주셔서 감사합니다. "
+                f"저는 AI 면접관입니다. 우선 지원자분 자기소개 부탁드립니다."
+            ),
+            "questionId": 1  # 실제 DB 저장 시 ID로 교체
+        }
 
     def generateFirstFollowup(
             self,
@@ -172,6 +174,6 @@ class InterviewRepositoryImpl(InterviewRepository):
             return {
                 "session_id": session_id,
                 "summary": summary,
-                "message": "면접이 성공적으로 종료되었습니다."
+                "message": "면접이 성공적으로 종료되었습니다.",
+                "success": True
             }
-

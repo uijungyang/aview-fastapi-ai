@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict
 
 from interview.service.request.question_generate_endInterview_request import EndInterviewRequest
 
@@ -14,6 +14,9 @@ class QuestionGenerationEndInterviewRequestForm(BaseModel):
     projectExperience: int
     academicBackground: int
     interviewTechStack: List[int]
+    context: Dict[str, str]
+    questions: List[str]
+    answers: List[str]
 
     def toEndInterviewRequest(self) -> EndInterviewRequest:
         return EndInterviewRequest(
@@ -25,7 +28,10 @@ class QuestionGenerationEndInterviewRequestForm(BaseModel):
             experienceLevel=self.experienceLevel,
             projectExperience=self.projectExperience,
             academicBackground=self.academicBackground,
-            interviewTechStack=self.interviewTechStack
+            interviewTechStack=self.interviewTechStack,
+            context=self.context,
+            questions=self.questions,
+            answers=self.answers
         )
 
 
