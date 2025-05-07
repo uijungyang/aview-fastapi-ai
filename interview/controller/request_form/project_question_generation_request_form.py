@@ -8,6 +8,7 @@ class ProjectQuestionGenerationRequestForm(BaseModel):
     userToken: str
     interviewId: int
     projectExperience: int  # 프로젝트 경험
+    questionId: int
 
 
     def toProjectQuestionGenerationRequest(self):
@@ -18,4 +19,5 @@ class ProjectQuestionGenerationRequestForm(BaseModel):
             interviewId=self.interviewId,
             projectExperience=project_experience,
             userToken=self.userToken,
+            questionId=self.questionId,
         )
