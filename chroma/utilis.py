@@ -29,6 +29,7 @@ def import_questions_from_excel(filepath: str, company: str):
                     "jobCategory": str(row["jobCategory"]),
                     "questionType": str(row["questionType"]),
                     "tag": str(row["tag"]),
+                    "company": row["company"].lower(),
                 }]
             )
         except Exception as e:
