@@ -1,3 +1,5 @@
+import json
+import asyncio
 import os
 from typing import List, Dict
 from openai import AsyncOpenAI
@@ -176,10 +178,10 @@ class InterviewRepositoryImpl(InterviewRepository):
             joined_qna = "\n".join(
                 [f"Q{i + 1}: {q}\nA{i + 1}: {a}" for i, (q, a) in enumerate(zip(questions, answers))]
             )
-
             context_summary = "\n".join([f"{k}: {v}" for k, v in context.items()])
 
-            prompt = f"""
+            # 요약 프롬프트
+            summary_prompt = f"""
     너는 면접관이야. 아래는 한 사용자의 전체 면접 흐름과 그에 대한 답변이야.
 
     [면접자 정보]
@@ -188,23 +190,72 @@ class InterviewRepositoryImpl(InterviewRepository):
     [면접 내용]
     {joined_qna}
 
-    면접자의 전체적인 태도, 경험, 강점을 기반으로 간단한 요약 및 피드백을 생성해줘.
+    면접자의 강점과 개선점을 간단히 3문장 이내로 요약해줘.
     """
-
-            response = await client.chat.completions.create(
+            summary_task = client.chat.completions.create(
                 model="gpt-4",
                 messages=[
-                    {"role": "system", "content": "너는 면접 결과를 정리해주는 AI 인사담당자야."},
-                    {"role": "user", "content": prompt.strip()}
+                    {"role": "system", "content": "너는 면접 요약을 해주는 AI 면접관이야."},
+                    {"role": "user", "content": summary_prompt.strip()}
                 ],
-                temperature=0.5
+                temperature=0.4,
+                max_tokens=150
             )
+            # 평가 프롬프트
+            async def evaluate_qna(q,a):
+                prompt = f"""
+너는 면접 평가 담당 AI야.
 
-            summary = response.choices[0].message["content"].strip()
+다음 질문과 답변을 보고 intent와 feedback을 아래 JSON 형식으로 작성해.
 
+형식:
+{{
+  "question": "...",
+  "answer": "...",
+  "intent": "지원동기",
+  "feedback": "답변이 구체적이고 명확함"
+}}
+
+질문: {q}
+답변: {a}
+"""
+                try:
+                    response = await client.chat.completions.create(
+                        model="gpt-4",
+                        messages=[{"role": "user", "content": prompt.strip()}],
+                        temperature=0.3,
+                        max_tokens=300
+                    )
+                    content = response.choices[0].message.content.strip()
+                    return json.loads(content)
+                except Exception as e:
+                    print(f"평가 실패(질문:{q}):{e}")
+                return {
+                    "question": q,
+                    "answer": a,
+                    "intent": "알수 없음",
+                    "feedback":"평가 실패"
+                }
+            #모든 질문에 대한 병렬평가 요청
+            eval_tasks = [evaluate_qna(q,a) for q, a in zip(questions,answers)]
+
+            try:
+                summary_response, qa_scores = await asyncio.gather(
+                    summary_task,
+                    asyncio.gather(*eval_tasks)
+                )
+            except asyncio.TimeoutError:
+                return {
+                    "session_id": session_id,
+                    "summary":"GPT 응답 지연",
+                    "qa_scores":[],
+                    "success":False
+                }
+
+            summary = summary_response.choices[0].message.content.strip()
             return {
                 "session_id": session_id,
                 "summary": summary,
-                "message": "면접이 성공적으로 종료되었습니다.",
+                "qa_scores": qa_scores,
                 "success": True
             }
