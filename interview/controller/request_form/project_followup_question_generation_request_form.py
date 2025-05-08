@@ -12,6 +12,7 @@ class ProjectFollowupQuestionGenerationRequestForm(BaseModel):
     topic: int
     techStack: list[int]
     projectExperience: int
+    companyName : str
     questionId: int
     answerText: str
     userToken: str
@@ -26,6 +27,7 @@ class ProjectFollowupQuestionGenerationRequestForm(BaseModel):
             topic=job_name,
             techStack=tech_stack,
             projectExperience=project_experience,
+            companyName=self.companyName,
             questionId=self.questionId,
             answerText=self.answerText,
             userToken=self.userToken,

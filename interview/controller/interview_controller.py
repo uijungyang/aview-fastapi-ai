@@ -1,5 +1,8 @@
+import os
+
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import JSONResponse
+from openai import AsyncOpenAI
 
 from interview.controller.request_form.first_followup_question_request_form import FirstFollowupQuestionRequestForm
 from interview.controller.request_form.first_question_generation_request_form import FirstQuestionGenerationRequestForm
@@ -12,7 +15,8 @@ interviewRouter = APIRouter()
 
 # 의존성 주입
 async def injectInterviewService() -> InterviewServiceImpl:
-    return InterviewServiceImpl()
+    return InterviewServiceImpl()   # 의존성 주입이 안됐대.
+
 
 # 첫 질문 생성
 @interviewRouter.post("/interview/question/generate")
@@ -30,7 +34,7 @@ async def generateInterviewQuestion(
             content={
                 "interviewId": response["interviewId"],
                 "question": response["question"],
-                "questionId": response["questionId"]  # ✅ 여기에 questionId 포함
+                "questionId": response["questionId"]  # 여기에 questionId 포함
             },
             status_code=status.HTTP_200_OK,
             headers={"Content-Type": "application/json; charset=UTF-8"}
@@ -46,9 +50,9 @@ async def generateFirstFollowupQuestions(
     requestForm: FirstFollowupQuestionRequestForm,
     interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
-    print(f"🎯 [controller] Received generateFirstFollowupQuestions() requestForm: {requestForm}")
+    print(f" [controller] Received generateFirstFollowupQuestions() requestForm: {requestForm}")
     try:
-        response = interviewService.generateFirstFollowupQuestions(
+        response = await interviewService.generateFirstFollowupQuestions(
             requestForm.toFirstFollowupQuestionGenerationRequest()
         )
         return JSONResponse(
@@ -67,7 +71,7 @@ async def generateProjectQuestion(
     requestForm: ProjectQuestionGenerationRequestForm,
     interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
-    print(f"🎯 [controller] Received generateProjectQuestion() requestForm: {requestForm}")
+    print(f" [controller] Received generateProjectQuestion() requestForm: {requestForm}")
     try:
         response = interviewService.generateProjectQuestion(
             requestForm.toProjectQuestionGenerationRequest()
@@ -87,9 +91,9 @@ async def generateProjectFollowupQuestion(
     requestForm: ProjectFollowupQuestionGenerationRequestForm,
     interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
-    print(f"🎯 [controller] Received generateProjectFollowupQuestion() requestForm: {requestForm}")
+    print(f" [controller] Received generateProjectFollowupQuestion() requestForm: {requestForm}")
     try:
-        response = interviewService.generateProjectFollowupQuestion(
+        response = await interviewService.generateProjectFollowupQuestion(
             requestForm.toProjectFollowupQuestionRequest()
         )
         return JSONResponse(
@@ -111,7 +115,7 @@ async def endInterview(
     try:
         dto = requestForm.toEndInterviewRequest()
         user_token = requestForm.userToken
-        answer = interviewService.end_interview(dto)
+        answer = await interviewService.end_interview(dto)
         return JSONResponse(
             content={
                 "message": "면접 종료",

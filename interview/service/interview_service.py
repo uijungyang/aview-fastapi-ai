@@ -9,7 +9,7 @@ class InterviewService(ABC):
         pass
 
     @abstractmethod
-    def generateFirstFollowupQuestions(self, request: dict) -> dict:
+    async def generateFirstFollowupQuestions(self, request: dict) -> dict:
         pass
 
     @abstractmethod
@@ -17,9 +17,9 @@ class InterviewService(ABC):
         pass
 
     @abstractmethod
-    def generateProjectFollowupQuestion(self, request: dict) -> dict:
+    async def generateProjectFollowupQuestion(self, request: dict) -> dict:
         pass
 
     @abstractmethod
-    def end_interview(self, request: EndInterviewRequest) -> str:
+    async def end_interview(self, request: EndInterviewRequest) -> str:
         pass
