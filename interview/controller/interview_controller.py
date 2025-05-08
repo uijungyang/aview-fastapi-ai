@@ -1,4 +1,5 @@
 import os
+import json
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import JSONResponse
@@ -116,12 +117,19 @@ async def endInterview(
         dto = requestForm.toEndInterviewRequest()
         user_token = requestForm.userToken
         answer = await interviewService.end_interview(dto)
+        if isinstance(answer, str):
+            try:
+                answer = json.loads(answer)
+            except Exception as e:
+                print(f"❌ FastAPI 응답 파싱 오류: {e}")
+                raise HTTPException(status_code=500, detail="AI 서버 응답 파싱 실패")
+
         return JSONResponse(
             content={
                 "message": "면접 종료",
-                "answer": answer,
-                "summary": answer.get("summary"),
-                "success": True
+                "summary": answer.get("summary","요약 없음"),
+                "qa_scores": answer.get("qa_scores",[]),
+                "success": answer.get("success",True)
             },
             status_code=status.HTTP_200_OK
         )
