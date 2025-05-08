@@ -84,7 +84,7 @@ class InterviewRepositoryImpl(InterviewRepository):
             projectExperience: str,
             userToken: str
     ) -> list[str]:
-        print(f"📡 [AI Server] Generating fixed project question for interviewId={interviewId}, userToken={userToken}")
+        print(f" [AI Server] Generating fixed project question for interviewId={interviewId}, userToken={userToken}")
 
         if projectExperience == "프로젝트 경험 있음":
             return ["다음 질문은 프로젝트에 관한 질문입니다.\n 어떤 프로젝트를 진행하셨나요?"]
