@@ -52,7 +52,7 @@ class InterviewServiceImpl(InterviewService):
         print(f" [service] Requesting first follow-up questions for interviewId={interviewId}")
 
         # 2. RAG로 질문 생성 (answerText 기반으로 하나만 생성)
-        print("🟢 [Service] Calling RAG now...")
+        print(f"🟢 [Service] Calling RAG now..., companyName: {companyName}, answerText :{answerText}")
         rag_response = await self.ragService.generate_interview_question(companyName, answerText)
 
         # GPT에 질문 생성 요청

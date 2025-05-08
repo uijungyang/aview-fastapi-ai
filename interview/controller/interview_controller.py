@@ -24,7 +24,7 @@ async def generateInterviewQuestion(
     requestForm: FirstQuestionGenerationRequestForm,
     interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
-    print(f"🎯 [controller] Received generateInterviewQuestion() requestForm: {requestForm}")
+    print(f" [controller] Received generateInterviewQuestion() requestForm: {requestForm}")
     try:
         response = interviewService.generateInterviewQuestions(
             requestForm.toFirstQuestionGenerationRequest()
