@@ -13,15 +13,18 @@ class InterviewRepository(ABC):
         pass
 
     @abstractmethod
-    def generateFirstFollowup(
+    async def generateFirstFollowup(
             self,
             interviewId: int,
             topic: str,
             experienceLevel: str,
             academicBackground: str,
+            companyName: str,
             questionId: int,
             answerText: str,
-            userToken: str
+            userToken: str,
+            context: str,
+            summary: str,
     ) -> list[str]:
         pass
 
@@ -35,15 +38,18 @@ class InterviewRepository(ABC):
         pass
 
     @abstractmethod
-    def generateProjectFollowupQuestion(
+    async def generateProjectFollowupQuestion(
             self,
             interviewId: int,
             topic: str,
             techStack: list[str],
             projectExperience: str,
+            companyName: str,
             questionId: int,
             answerText: str,
             userToken: str,
+            context: str,
+            summary: str,
     ) -> list[str]:
         pass
 

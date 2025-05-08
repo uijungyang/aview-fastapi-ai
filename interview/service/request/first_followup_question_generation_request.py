@@ -6,6 +6,7 @@ class FirstFollowupQuestionGenerationRequest(BaseModel):
     topic: str
     experienceLevel: str
     academicBackground: str
+    companyName : str
     questionId: int
     answerText: str
     userToken: str

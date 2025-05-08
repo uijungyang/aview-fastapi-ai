@@ -9,6 +9,7 @@ class FirstFollowupQuestionRequestForm(BaseModel):
     topic: int
     experienceLevel: int
     academicBackground: int
+    companyName: str  # ✅ 회사명추가
     questionId: int
     answerText: str
     userToken: str
@@ -23,6 +24,7 @@ class FirstFollowupQuestionRequestForm(BaseModel):
             topic=job_name,
             experienceLevel=experience_level,
             academicBackground=academic_background,
+            companyName= self.companyName,
             questionId=self.questionId,
             answerText=self.answerText,
             userToken=self.userToken,
