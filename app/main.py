@@ -7,6 +7,7 @@ import sys
 
 from starlette.middleware.cors import CORSMiddleware
 
+from chroma.delete_controller import deleteRouter
 from interview.controller.interview_controller import interviewRouter
 from config.cors_config import CorsConfig
 from openai_api.controller.openai_api_controller import openaiApiRouter
@@ -14,6 +15,7 @@ from polyglot_temp.controller.polyglot_controller import polyglotRouter
 from test.controller.test_controller import testRouter
 from chroma.upload_controller import uploadRouter
 from rag_api.controller.rag_controller import ragRouter
+
 from api import rss
 from api import sitemap
 
@@ -38,6 +40,7 @@ app.include_router(uploadRouter, prefix="/chroma")
 app.include_router(polyglotRouter)
 app.include_router(rss.router)
 app.include_router(sitemap.router)
+app.include_router(deleteRouter, prefix="/chroma")
 app.include_router(ragRouter, prefix="/rag")
 
 
