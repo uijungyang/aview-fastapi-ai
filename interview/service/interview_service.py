@@ -21,5 +21,9 @@ class InterviewService(ABC):
         pass
 
     @abstractmethod
+    async def generateTechFollowupQuestion(self, request: dict) -> dict:
+        pass
+
+    @abstractmethod
     async def end_interview(self, request: EndInterviewRequest) -> str:
         pass

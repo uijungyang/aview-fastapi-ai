@@ -168,6 +168,79 @@ class InterviewRepositoryImpl(InterviewRepository):
 
         return questions
 
+    # 프로젝트 꼬리질문 생성: 4
+    async def generateTechFollowupQuestion(
+            self,
+            interviewId: int,
+            topic: str,
+            techStack: list[str],
+            projectExperience: str,
+            companyName : str,
+            questionId: int,
+            answerText: str,
+            userToken: str,
+            context: str,
+            summary: str,
+    ) -> list[str]:
+
+        print(f"[AI Server] Generating 5 questions for interviewId={interviewId}, userToken={userToken}")
+
+        # 프롬프트 정의
+        if projectExperience == "프로젝트 경험 있음":
+            tech_stack_str = ", ".join(techStack)
+            prompt = f"""
+        너는 IT 기업의 실제 면접관이야.
+        면접자의 이전 답변과 회사에서 자주 사용하는 면접 스타일을 바탕으로,
+        답변 흐름에 자연스럽게 이어지는 후속 질문을 만들어줘.
+
+        [질문 ID]: {questionId}
+        [면접자 답변]: {answerText}
+        [사용 기술 스택]: {tech_stack_str}
+        [이 회사의 질문 스타일 요약]: {summary}
+        [과거 유사 질문 예시]: {context}
+
+        규칙:
+        - 질문은 **반드시 직전 답변에 논리적으로 이어지는 한 문장**이어야 함
+        - **"~한 적 있나요?", "~한 이유는 무엇인가요?"**처럼 부드럽고 구체적인 질문 형태 권장
+        - **"프로젝트 경험이 있다면..."**처럼 조건식으로 시작하는 문장은 금지
+        - 질문은 **짧고 명확하게**, 설명 없이 출력
+        - 사용한 기술(스택)의 활용 방식, 선택 이유, 문제 해결 경험 등으로 연결되면 좋음
+        """
+
+        else:
+            tech_stack_str = ", ".join(techStack)
+            prompt = f"""
+        너는 IT 기업의 실제 면접관이야.
+        면접자의 답변과 기업 면접 스타일에 맞춰, 직무나 기술 학습 경험에 기반한
+        자연스럽고 구체적인 꼬리질문을 한 문장으로 생성해줘.
+
+        [질문 ID]: {questionId}
+        [면접자 답변]: {answerText}
+        [사용 기술 스택]: {tech_stack_str}
+        [이 회사의 질문 스타일 요약]: {summary}
+        [과거 유사 질문 예시]: {context}
+
+        규칙:
+        - 직무 관련 학습 경험, 협업 경험, 기술 습득 노력에 기반한 질문을 생성할 것
+        - **"경험이 없다면..."** 또는 가정형 조건문으로 시작하는 문장은 사용하지 말 것
+        - 반드시 **한 문장의 실제 질문**만 출력 (설명, 줄바꿈 금지)
+        - 사용한 기술(스택)의 활용 방식, 선택 이유, 문제 해결 경험 등으로 연결되면 좋음
+        """
+
+        # GPT-4 호출
+        response = await client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "너는 진짜 면접관처럼 질문을 생성하는 역할이야."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+
+        result_text = response.choices[0].message.content.strip()
+        questions = [q.strip() for q in result_text.split("\n") if q.strip()]
+
+        return questions
+
     # 면접 종료
     async def end_interview(self,
                                 session_id: str,

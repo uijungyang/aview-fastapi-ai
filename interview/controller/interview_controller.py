@@ -106,6 +106,26 @@ async def generateProjectFollowupQuestion(
         print(f"❌ 프로젝트 꼬리질문 Error in generateProjectFollowupQuestion(): {str(e)}")
         raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
 
+# 프로젝트 꼬리 질문 생성
+@interviewRouter.post("/interview/question/tech-followup-generate")
+async def generateTechFollowupQuestion(
+    requestForm: ProjectFollowupQuestionGenerationRequestForm,
+    interviewService: InterviewServiceImpl = Depends(injectInterviewService)
+):
+    print(f" [controller] Received generateProjectFollowupQuestion() requestForm: {requestForm}")
+    try:
+        response = await interviewService.generateProjectFollowupQuestion(
+            requestForm.toProjectFollowupQuestionRequest()
+        )
+        return JSONResponse(
+            content=response,
+            status_code=status.HTTP_200_OK,
+            headers={"Content-Type": "application/json; charset=UTF-8"}
+        )
+    except Exception as e:
+        print(f"❌ 프로젝트 꼬리질문 Error in generateProjectFollowupQuestion(): {str(e)}")
+        raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
+
 # 면접 종료
 @interviewRouter.post("/interview/question/end_interview")
 async def endInterview(
