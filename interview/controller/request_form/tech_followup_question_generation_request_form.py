@@ -16,7 +16,7 @@ class TechFollowupQuestionGenerationRequestForm(BaseModel):
     def toTechFollowupQuestionRequest(self):
         tech_stack = InterviewTechStack.get_tech_stack_list(self.techStack)
 
-        return ProjectFollowupGenerationRequest(
+        return TechFollowupGenerationRequest(
             interviewId=self.interviewId,
             techStack=tech_stack,
             questionId=self.questionId,

@@ -183,7 +183,7 @@ class InterviewRepositoryImpl(InterviewRepository):
             summary: str,
     ) -> list[str]:
 
-        print(f"[AI Server] Generating 5 questions for interviewId={interviewId}, userToken={userToken}")
+        print(f"[AI Server] Generating tech follow-up questions for interviewId={interviewId}, userToken={userToken}")
 
         # 프롬프트 정의
         if projectExperience == "프로젝트 경험 있음":

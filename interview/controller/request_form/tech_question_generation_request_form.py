@@ -1,18 +1,18 @@
 from pydantic import BaseModel
 
-from interview.entity.project_experience import ProjectExperience
-from interview.service.request.project_question_generation_request import ProjectQuestionGenerationRequest
+from interview.entity.interview_tech_stack import InterviewTechStack
+from interview.service.request.tech_question_generation_request import TechQuestionGenerationRequest
 
 
 class TechQuestionGenerationRequestForm(BaseModel):
     userToken: str
-    interviewId: int
+    techStack: list[int]
     techStack: int
     questionId: int
 
 
-    def toProjectQuestionGenerationRequest(self):
-        tech_stack = ProjectExperience.get_project_experience(self.projectExperience)
+    def toTechQuestionGenerationRequest(self):
+        tech_stack = InterviewTechStack.get_tech_stack_list(self.techStack)
 
 
         return TechQuestionGenerationRequest(
