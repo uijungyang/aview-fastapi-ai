@@ -9,6 +9,7 @@ from interview.service.request.first_followup_question_generation_request import
 from interview.service.request.project_question_generation_request import ProjectQuestionGenerationRequest
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
 from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
+from interview.service.request.tech_followup_generation_request import TechFollowupGenerationRequest
 from rag_api.service.rag_service_impl import RagServiceImpl
 
 
@@ -104,6 +105,30 @@ class InterviewServiceImpl(InterviewService):
 
         followup_question = await self.interviewRepository.generateProjectFollowupQuestion(
             interviewId, topic, techStack, projectExperience, companyName, questionId, answerText, userToken, rag_response["used_context"], rag_response["summary"]
+        )
+        question_ids = [questionId + i + 1 for i in range(len(followup_question))]
+
+        return {
+            "interviewId": interviewId,
+            "questions": followup_question,
+            "questionIds": question_ids,
+            "usedContext": rag_response["used_context"],
+            "summary": rag_response["summary"]
+        }
+
+    async def generateTechFollowupQuestion(self, request: TechFollowupGenerationRequest) -> dict:
+        interviewId = request.interviewId
+        techStack = request.techStack
+        questionId = request.questionId
+        answerText = request.answerText
+        userToken = request.userToken
+        print(f" [service] Requesting follow-up question for interviewId={interviewId}, questionId={questionId}")
+
+        # 2. RAG 기반 질문 생성 (답변 기반)
+        rag_response = await self.ragService.generate_interview_question(answerText)
+
+        followup_question = await self.interviewRepository.generateTechFollowupQuestion(
+            interviewId, techStack, questionId, answerText, userToken, rag_response["used_context"], rag_response["summary"]
         )
         question_ids = [questionId + i + 1 for i in range(len(followup_question))]
 

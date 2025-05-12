@@ -10,6 +10,8 @@ from interview.controller.request_form.first_question_generation_request_form im
 from interview.controller.request_form.project_followup_question_generation_request_form import ProjectFollowupQuestionGenerationRequestForm
 from interview.controller.request_form.project_question_generation_request_form import ProjectQuestionGenerationRequestForm
 from interview.controller.request_form.question_generate_endInterview_request_form import QuestionGenerationEndInterviewRequestForm
+from interview.controller.request_form.tech_followup_question_generation_request_form import \
+    TechFollowupQuestionGenerationRequestForm
 from interview.service.interview_service_impl import InterviewServiceImpl
 
 interviewRouter = APIRouter()
@@ -104,6 +106,26 @@ async def generateProjectFollowupQuestion(
         )
     except Exception as e:
         print(f"❌ 프로젝트 꼬리질문 Error in generateProjectFollowupQuestion(): {str(e)}")
+        raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
+
+# 기술 꼬리 질문 생성
+@interviewRouter.post("/interview/question/tech-followup-generate")
+async def generateTechFollowupQuestion(
+    requestForm: TechFollowupQuestionGenerationRequestForm,
+    interviewService: InterviewServiceImpl = Depends(injectInterviewService)
+):
+    print(f" [controller] Received generateTechFollowupQuestion() requestForm: {requestForm}")
+    try:
+        response = await interviewService.generateTechFollowupQuestion(
+            requestForm.toTechFollowupQuestionRequest()
+        )
+        return JSONResponse(
+            content=response,
+            status_code=status.HTTP_200_OK,
+            headers={"Content-Type": "application/json; charset=UTF-8"}
+        )
+    except Exception as e:
+        print(f"❌ 프로젝트 꼬리질문 Error in generateTechFollowupQuestion(): {str(e)}")
         raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
 
 # 면접 종료
