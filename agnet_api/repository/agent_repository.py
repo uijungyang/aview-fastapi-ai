@@ -3,5 +3,6 @@ from abc import ABC, abstractmethod
 
 class AgentRepository(ABC):
     @abstractmethod
-    def get_company_description(self, company_name: str) -> str:
+    def build_decision_prompt(self, companyName: str, topic: str, gpt_question: str, rag_main_result: list,
+                              rag_fallback_result: list = None) -> str:
         pass

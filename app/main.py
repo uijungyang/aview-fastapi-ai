@@ -15,7 +15,6 @@ from openai_api.controller.openai_api_controller import openaiApiRouter
 from polyglot_temp.controller.polyglot_controller import polyglotRouter
 from test.controller.test_controller import testRouter
 from chroma.upload_controller import uploadRouter
-from rag_api.controller.rag_controller import ragRouter
 
 from api import rss
 from api import sitemap
@@ -42,8 +41,7 @@ app.include_router(polyglotRouter)
 app.include_router(rss.router)
 app.include_router(sitemap.router)
 app.include_router(deleteRouter, prefix="/chroma")
-app.include_router(agentRouter)
-app.include_router(ragRouter, prefix="/rag")
+app.include_router(agentRouter, prefix="/agent")
 
 
 @app.get("/robots.txt", include_in_schema=False)

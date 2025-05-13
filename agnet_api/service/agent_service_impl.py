@@ -1,48 +1,45 @@
+import os
+from dotenv import load_dotenv
+#from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from agnet_api.repository.agent_repository_impl import AgentRepositoryImpl
-from agnet_api.service.agent_service import AgentService
-from rag_api.repository.vector_repository_impl import RagVectorRepositoryImpl
-from rag_api.entity.embedding import get_embedding
+from agnet_api.repository.rag_repository_impl import RagRepositoryImpl
 
-from sklearn.metrics.pairwise import cosine_similarity
+load_dotenv()
 
-class AgentServiceImpl(AgentService):
-
+class AgentServiceImpl:
     def __init__(self):
-        self.ragVectorRepository = RagVectorRepositoryImpl()
         self.agentRepository = AgentRepositoryImpl()
+        self.ragRepository = RagRepositoryImpl()
+        self.openAPI = ChatOpenAI(api_key=os.getenv("OPENAI_API_KEY"), temperature=0)
 
+    async def get_best_followup_question(self, companyName: str, topic: str, situation: str, gpt_question: str):
+        # situation : answerText (이전 질문에 대한 면접자의 답변)
+        print(f"🔥 AGENT started: company={companyName}, topic={topic}")
 
-    async def get_context_with_agent_fallback(self, target_company: str, situation: str):
-        print(f"\U0001F525 [AGENT] fallback initiated from {target_company}")
+        # 1. RAG 1차 (메인 회사 DB)
+        rag_main_result = self.ragRepository.rag_main(companyName, situation)
+        print(f"🟢 RAG Main 결과: {rag_main_result}")
 
-        # 1. 공통 DB에서 유사 질문 검색
-        supplemental_collection = self.ragVectorRepository.get_collection("supplemental")
-        query_embedding = get_embedding(situation)
-        result = supplemental_collection.query(query_embeddings=[query_embedding], n_results=10)
+        # 2. RAG 2차 (Fallback DB) 조건부 호출
+        rag_fallback_result = []
+        if not rag_main_result:
+            print(f"🔄 RAG Main 실패 → Fallback DB 조회 진행")
+            rag_fallback_result = self.ragRepository.rag_fallback(situation)
+            print(f"🟢 RAG Fallback 결과: {rag_fallback_result}")
 
-        if not result["documents"]:
-            return []
+        # 3. AGENT에게 최종 선택 요청
+        decision_prompt = self.agentRepository.build_decision_prompt(
+            companyName, topic, gpt_question, rag_main_result, rag_fallback_result
+        )
 
-        matched_docs = result["documents"][0]
-        matched_metas = result["metadatas"][0]
+        print(f"📝 AGENT Prompt:\n{decision_prompt}")
 
-        # 2. target 회사 설명과 각 회사 설명 비교
-        target_desc = self.agentRepository.get_company_description(target_company)
-        target_desc_emb = get_embedding(target_desc)
+        response = self.openAPI .predict(decision_prompt)
+        print(f"🎯 AGENT 최종 선택: {response}")
 
-        company_scores = {}
-        for meta in matched_metas:
-            comp = meta.get("company")
-            comp_desc = self.agentRepository.get_company_description(comp)
-            comp_desc_emb = get_embedding(comp_desc)
+        # 4. used_context / summary 리턴 포맷
+        used_context = "\n".join(rag_main_result or rag_fallback_result)
+        summary = f"{companyName} DB 검색 + Fallback 여부 포함"
 
-            sim = cosine_similarity([target_desc_emb], [comp_desc_emb])[0][0]
-            company_scores[comp] = sim
-
-        # 3. 상위 유사 회사들 필터링
-        top_companies = sorted(company_scores.items(), key=lambda x: x[1], reverse=True)[:3]
-        top_names = {c[0] for c in top_companies}
-
-        final_contexts = [doc for doc, meta in zip(matched_docs, matched_metas) if meta["company"] in top_names]
-
-        return final_contexts
+        return response, used_context, summary
