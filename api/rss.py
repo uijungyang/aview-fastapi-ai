@@ -10,7 +10,7 @@ def rss_feed():
     items = [
         {
             "title": "AI 인터뷰 시스템 출시",
-            "link": "https://job-stick.com/posts/ai-interview",
+            "link": "https://job-stick.net/posts/ai-interview",
             "description": "AI 기반 면접 시스템이 출시되었습니다.",
             "pubDate": datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
         }
@@ -32,7 +32,7 @@ def rss_feed():
     <rss version="2.0">
         <channel>
             <title>JOBSTICK</title>
-            <link>https://job-stick.com</link>
+            <link>https://job-stick.net</link>
             <description>JOBSTICK - AI 모의 기술 면접을 통해 취업 경쟁력을 높이세요!.</description>
             {rss_items}
         </channel>
