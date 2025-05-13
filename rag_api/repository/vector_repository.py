@@ -10,3 +10,6 @@ class RagVectorRepository(ABC):
     def retrieve_similar_document(self, company: str, query: str) -> str:
         pass
 
+    @abstractmethod
+    def get_requirements(self, company: str, job_category: str):
+        pass

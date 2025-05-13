@@ -8,5 +8,5 @@ class RagService(ABC):
         pass
 
     @abstractmethod
-    async def generate_interview_question(self, company: str, situation: str) -> dict:
+    async def generate_interview_question(self, company: str, jobCategory: str, situation: str) -> dict:
         pass
