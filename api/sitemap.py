@@ -63,7 +63,7 @@ def sitemap():
     url_entries = "".join([
         f"""
         <url>
-            <loc>https://job-stick.com{url}</loc>
+            <loc>https://job-stick.net{url}</loc>
             <lastmod>{datetime.utcnow().date()}</lastmod>
             <changefreq>weekly</changefreq>
             <priority>0.8</priority>
