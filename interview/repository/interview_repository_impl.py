@@ -1,3 +1,4 @@
+import importlib
 import json
 import asyncio
 import os
@@ -39,10 +40,20 @@ class InterviewRepositoryImpl(InterviewRepository):
             questionId: int,
             answerText: str,
             userToken: str,
-            context: str,
-            summary: str,
     ) -> list[str]:
         print(f" [repository] Generating intro follow-up questions for interviewId={interviewId},userToken={userToken}")
+
+        # prompt에 있는 기업별 직무 요구사항 프롬프트 가져오기
+        try:
+            module_path = f"prompt.{companyName}.{topic}"
+            module = importlib.import_module(module_path)
+            requirements = getattr(module, "REQUIREMENTS", "해당 직무의 요구사항이 없습니다.")
+        except ModuleNotFoundError:
+            requirements = "REQUIREMENTS 프롬프트 파일을 찾을 수 없습니다."
+        except AttributeError:
+            requirements = "REQUIREMENTS가 등록되어 있지 않습니다."
+
+
 
         prompt = (
             f"너는 IT 기업의 면접관이야. 아래 면접자의 기본 정보와 자기소개 답변을 참고해, "
@@ -50,10 +61,9 @@ class InterviewRepositoryImpl(InterviewRepository):
     f"[직무]: {topic}\n"
     f"[경력]: {experienceLevel}\n"
     f"[학력 배경]: {academicBackground}\n"
+    f"[직무 요구사항]: {requirements}\n"
     f"[첫 질문 번호]: {questionId}\n"
     f"[자기소개 답변]: {answerText}\n\n"
-    f"[이 회사의 질문 스타일 요약]: {summary}\n"
-    f"[과거 유사 질문 예시]: {context}\n\n"
     f"요청사항:\n"
     f"- 질문은 반드시 **짧고 명확한 한 문장**으로 작성할 것\n"
     f"- **기술, 프로젝트, 프레임워크, API, 라이브러리 관련 질문은 금지**\n"
@@ -107,11 +117,18 @@ class InterviewRepositoryImpl(InterviewRepository):
             questionId: int,
             answerText: str,
             userToken: str,
-            context: str,
-            summary: str,
     ) -> list[str]:
-
+# interviewId, topic, techStack, projectExperience, companyName, questionId, answerText, userToken
         print(f"[AI Server] Generating 5 questions for interviewId={interviewId}, userToken={userToken}")
+
+        try:
+            module_path = f"prompt.{companyName}.{topic}"
+            module = importlib.import_module(module_path)
+            requirements = getattr(module, "REQUIREMENTS", "해당 직무의 요구사항이 없습니다.")
+        except ModuleNotFoundError:
+            requirements = "REQUIREMENTS 프롬프트 파일을 찾을 수 없습니다."
+        except AttributeError:
+            requirements = "REQUIREMENTS가 등록되어 있지 않습니다."
 
         # 프롬프트 정의
         if projectExperience == "프로젝트 경험 있음":
@@ -124,8 +141,7 @@ class InterviewRepositoryImpl(InterviewRepository):
         [질문 ID]: {questionId}
         [면접자 답변]: {answerText}
         [사용 기술 스택]: {tech_stack_str}
-        [이 회사의 질문 스타일 요약]: {summary}
-        [과거 유사 질문 예시]: {context}
+        [직무 요구사항]: {requirements}\n
 
         규칙:
         - 질문은 **반드시 직전 답변에 논리적으로 이어지는 한 문장**이어야 함
@@ -145,8 +161,7 @@ class InterviewRepositoryImpl(InterviewRepository):
         [질문 ID]: {questionId}
         [면접자 답변]: {answerText}
         [사용 기술 스택]: {tech_stack_str}
-        [이 회사의 질문 스타일 요약]: {summary}
-        [과거 유사 질문 예시]: {context}
+        [직무 요구사항]: {requirements}\n
 
         규칙:
         - 직무 관련 학습 경험, 협업 경험, 기술 습득 노력에 기반한 질문을 생성할 것
@@ -169,63 +184,36 @@ class InterviewRepositoryImpl(InterviewRepository):
 
         return questions
 
-    # 프로젝트 꼬리질문 생성: 4
+    # 기술 꼬리질문 생성: 4
     async def generateTechFollowupQuestion(
             self,
             interviewId: int,
-            topic: str,
+            #topic: str,
             techStack: list[str],
-            projectExperience: str,
-            companyName : str,
+            #projectExperience: str,
+            #companyName : str,
             questionId: int,
             answerText: str,
             userToken: str,
-            context: str,
-            summary: str,
     ) -> list[str]:
+
+        '''
+        기술 DB를 참고해야함. 선택한 tech_stack_str에 해당되는 질문을 뽑던가, GPT로 만들던가 해야함
+        '''
 
         print(f"[AI Server] Generating tech follow-up questions for interviewId={interviewId}, userToken={userToken}")
 
         # 프롬프트 정의
-        if projectExperience == "프로젝트 경험 있음":
-            tech_stack_str = ", ".join(techStack)
-            prompt = f"""
+        tech_stack_str = ", ".join(techStack)
+        prompt = f"""
         너는 IT 기업의 실제 면접관이야.
-        면접자의 이전 답변과 회사에서 자주 사용하는 면접 스타일을 바탕으로,
-        답변 흐름에 자연스럽게 이어지는 후속 질문을 만들어줘.
+        면접자의 사용 기술 스택을 참고해서 기술을 얼마나 잘 아는지 설명하라는 형태의 질문을 만들어
 
         [질문 ID]: {questionId}
-        [면접자 답변]: {answerText}
         [사용 기술 스택]: {tech_stack_str}
-        [이 회사의 질문 스타일 요약]: {summary}
-        [과거 유사 질문 예시]: {context}
 
         규칙:
-        - 질문은 **반드시 직전 답변에 논리적으로 이어지는 한 문장**이어야 함
-        - **"~한 적 있나요?", "~한 이유는 무엇인가요?"**처럼 부드럽고 구체적인 질문 형태 권장
-        - **"프로젝트 경험이 있다면..."**처럼 조건식으로 시작하는 문장은 금지
-        - 질문은 **짧고 명확하게**, 설명 없이 출력
-        - 사용한 기술(스택)의 활용 방식, 선택 이유, 문제 해결 경험 등으로 연결되면 좋음
-        """
 
-        else:
-            tech_stack_str = ", ".join(techStack)
-            prompt = f"""
-        너는 IT 기업의 실제 면접관이야.
-        면접자의 답변과 기업 면접 스타일에 맞춰, 직무나 기술 학습 경험에 기반한
-        자연스럽고 구체적인 꼬리질문을 한 문장으로 생성해줘.
-
-        [질문 ID]: {questionId}
-        [면접자 답변]: {answerText}
-        [사용 기술 스택]: {tech_stack_str}
-        [이 회사의 질문 스타일 요약]: {summary}
-        [과거 유사 질문 예시]: {context}
-
-        규칙:
-        - 직무 관련 학습 경험, 협업 경험, 기술 습득 노력에 기반한 질문을 생성할 것
-        - **"경험이 없다면..."** 또는 가정형 조건문으로 시작하는 문장은 사용하지 말 것
-        - 반드시 **한 문장의 실제 질문**만 출력 (설명, 줄바꿈 금지)
-        - 사용한 기술(스택)의 활용 방식, 선택 이유, 문제 해결 경험 등으로 연결되면 좋음
         """
 
         # GPT-4 호출
