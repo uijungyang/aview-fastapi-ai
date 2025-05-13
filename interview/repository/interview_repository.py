@@ -23,8 +23,6 @@ class InterviewRepository(ABC):
             questionId: int,
             answerText: str,
             userToken: str,
-            context: str,
-            summary: str,
     ) -> list[str]:
         pass
 
@@ -45,11 +43,9 @@ class InterviewRepository(ABC):
             techStack: list[str],
             projectExperience: str,
             companyName: str,
-            questionId: int,
             answerText: str,
+            questionId: int,
             userToken: str,
-            context: str,
-            summary: str,
     ) -> list[str]:
         pass
 
@@ -57,15 +53,13 @@ class InterviewRepository(ABC):
     async def generateTechFollowupQuestion(
             self,
             interviewId: int,
-            topic: str,
+            #topic: str,
             techStack: list[str],
-            projectExperience: str,
-            companyName: str,
+            #projectExperience: str,
+            #companyName: str,
             questionId: int,
             answerText: str,
             userToken: str,
-            context: str,
-            summary: str,
     ) -> list[str]:
         pass
 

@@ -1,6 +1,7 @@
 import json
 from typing import List, Dict
 
+from agnet_api.service.agent_service_impl import AgentServiceImpl
 from interview.entity.end_of_interview import EndOfInterview
 from interview.repository.interview_repository_impl import InterviewRepositoryImpl
 from interview.service.interview_service import InterviewService
@@ -10,14 +11,13 @@ from interview.service.request.project_question_generation_request import Projec
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
 from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
 from interview.service.request.tech_followup_generation_request import TechFollowupGenerationRequest
-from rag_api.service.rag_service_impl import RagServiceImpl
 
 
 class InterviewServiceImpl(InterviewService):
 
     def __init__(self):
         self.interviewRepository = InterviewRepositoryImpl()
-        self.ragService = RagServiceImpl()
+        self.agentService = AgentServiceImpl()
 
     # 인터뷰 첫질문 생성 + 첫질문의 꼬리질문
     def generateInterviewQuestions(self, request: FirstQuestionGenerationRequest) -> dict:
@@ -52,22 +52,28 @@ class InterviewServiceImpl(InterviewService):
 
         print(f" [service] Requesting first follow-up questions for interviewId={interviewId}")
 
-        # 2. RAG로 질문 생성 (answerText 기반으로 하나만 생성)
-        print(f"🟢 [Service] Calling RAG now..., companyName: {companyName}, answerText :{answerText}")
-        rag_response = await self.ragService.generate_interview_question(companyName, answerText)
-
-        # GPT에 질문 생성 요청
+        # 1. GPT에 먼저 질문 생성 요청
         questions = await self.interviewRepository.generateFirstFollowup(
-            interviewId, topic, experienceLevel, academicBackground, companyName, questionId, answerText, userToken, rag_response["used_context"], rag_response["summary"]
+            interviewId, topic, experienceLevel, academicBackground, companyName, questionId, answerText, userToken)
+        questions = questions[0]  # '질문중 하나만 사용한다고 가정'이라는데 이미 질문을 1개만 생성이어서 있으나 마나일듯
+
+        # RAG로 질문 생성 (answerText 기반으로 하나만 생성) -> 구조 변경해서 RAG는 AGENT에 편입됨
+        #rag_response = await self.ragService.generate_interview_question(companyName, topic, questions)
+
+         # 2. AGENT에게 최종 질문 선택 요청 (RAG + Fallback 포함)
+        print(f"🟢 [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{questions}")
+        final_question, used_context, summary = await self.agentService.get_best_followup_question(
+            companyName, topic, answerText, questions
         )
-        question_ids = [questionId + i + 1 for i in range(len(questions))]
+        # question_ids = [questionId + i + 1 for i in range(len(questions))] 기존 코드
+        question_ids = [questionId + 1]
 
         return {
             "interviewId": interviewId,
-            "questions": questions,
+            "questions": [final_question],
             "questionIds": question_ids,
-            "usedContext": rag_response["used_context"],
-            "summary": rag_response["summary"]
+            "usedContext": used_context,
+            "summary": summary
         }
 
     # 프로젝트 첫질문 생성
@@ -100,20 +106,25 @@ class InterviewServiceImpl(InterviewService):
         userToken = request.userToken
         print(f" [service] Requesting follow-up question for interviewId={interviewId}, questionId={questionId}")
 
-        # 2. RAG 기반 질문 생성 (답변 기반)
-        rag_response = await self.ragService.generate_interview_question(companyName, answerText)
+        # GPT가 먼저 질문 생성
+        questions = await self.interviewRepository.generateProjectFollowupQuestion(
+            interviewId, topic, techStack, projectExperience, companyName, questionId, answerText, userToken)
+        questions = questions[0]  # '질문중 하나만 사용한다고 가정'이라는데 이미 질문을 1개만 생성이어서 있으나 마나일듯
 
-        followup_question = await self.interviewRepository.generateProjectFollowupQuestion(
-            interviewId, topic, techStack, projectExperience, companyName, questionId, answerText, userToken, rag_response["used_context"], rag_response["summary"]
+        # AGENT 에서 최종 질문 (final_question) 반환
+        print(f"🟢 [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{questions}")
+        final_question, used_context, summary = await self.agentService.get_best_followup_question(
+            companyName, topic, answerText, questions
         )
-        question_ids = [questionId + i + 1 for i in range(len(followup_question))]
+        # question_ids = [questionId + i + 1 for i in range(len(questions))] 기존 코드
+        question_ids = [questionId + 1]
 
         return {
             "interviewId": interviewId,
-            "questions": followup_question,
+            "questions": [final_question],
             "questionIds": question_ids,
-            "usedContext": rag_response["used_context"],
-            "summary": rag_response["summary"]
+            "usedContext": used_context,
+            "summary": summary
         }
 
     async def generateTechFollowupQuestion(self, request: TechFollowupGenerationRequest) -> dict:
@@ -124,20 +135,18 @@ class InterviewServiceImpl(InterviewService):
         userToken = request.userToken
         print(f" [service] Requesting follow-up question for interviewId={interviewId}, questionId={questionId}")
 
-        # 2. RAG 기반 질문 생성 (답변 기반)
-        rag_response = await self.ragService.generate_interview_question(answerText)
-
+        # GPT로 질문 먼저 생성  !!! 여기 아직 안바꿈!!!
         followup_question = await self.interviewRepository.generateTechFollowupQuestion(
-            interviewId, techStack, questionId, answerText, userToken, rag_response["used_context"], rag_response["summary"]
-        )
+            interviewId, techStack, questionId, answerText, userToken)
+        #questions = questions[0]
         question_ids = [questionId + i + 1 for i in range(len(followup_question))]
+
+        # AGENT를 도입해야하나? 아무튼 기술 DB 등록해서 연결시켜야하긴함.
 
         return {
             "interviewId": interviewId,
             "questions": followup_question,
             "questionIds": question_ids,
-            "usedContext": rag_response["used_context"],
-            "summary": rag_response["summary"]
         }
 
     async def end_interview(self, request: EndInterviewRequest) -> str:
