@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://job-stick.net/sitemap.xml
+Sitemap: https://job-stick.com/sitemap.xml

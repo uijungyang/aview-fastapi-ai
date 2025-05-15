@@ -32,7 +32,7 @@ def rss_feed():
     <rss version="2.0">
         <channel>
             <title>JOBSTICK</title>
-            <link>https://job-stick.net</link>
+            <link>https://job-stick.com</link>
             <description>JOBSTICK - AI 모의 기술 면접을 통해 취업 경쟁력을 높이세요!.</description>
             {rss_items}
         </channel>
