@@ -1,6 +1,7 @@
 import json
 from typing import List, Dict
 
+from agnet_api.repository.rag_repository_impl import RagRepositoryImpl
 from agnet_api.service.agent_service_impl import AgentServiceImpl
 from interview.entity.end_of_interview import EndOfInterview
 from interview.repository.interview_repository_impl import InterviewRepositoryImpl
@@ -18,6 +19,7 @@ class InterviewServiceImpl(InterviewService):
     def __init__(self):
         self.interviewRepository = InterviewRepositoryImpl()
         self.agentService = AgentServiceImpl()
+        self.ragRepository = RagRepositoryImpl()
 
     # 인터뷰 첫질문 생성 + 첫질문의 꼬리질문
     def generateInterviewQuestions(self, request: FirstQuestionGenerationRequest) -> dict:
@@ -53,27 +55,21 @@ class InterviewServiceImpl(InterviewService):
         print(f" [service] Requesting first follow-up questions for interviewId={interviewId}")
 
         # 1. GPT에 먼저 질문 생성 요청
-        questions = await self.interviewRepository.generateFirstFollowup(
+        gpt_question = await self.interviewRepository.generateFirstFollowup(
             interviewId, topic, experienceLevel, academicBackground, companyName, questionId, answerText, userToken)
-        questions = questions[0]  # '질문중 하나만 사용한다고 가정'이라는데 이미 질문을 1개만 생성이어서 있으나 마나일듯
 
-        # RAG로 질문 생성 (answerText 기반으로 하나만 생성) -> 구조 변경해서 RAG는 AGENT에 편입됨
-        #rag_response = await self.ragService.generate_interview_question(companyName, topic, questions)
 
          # 2. AGENT에게 최종 질문 선택 요청 (RAG + Fallback 포함)
-        print(f"🟢 [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{questions}")
-        final_question, used_context, summary = await self.agentService.get_best_followup_question(
-            companyName, topic, answerText, questions
+        print(f" [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{gpt_question}")
+        final_question = await self.agentService.get_best_followup_question(
+            companyName, topic, answerText, gpt_question, userToken
         )
-        # question_ids = [questionId + i + 1 for i in range(len(questions))] 기존 코드
         question_ids = [questionId + 1]
 
         return {
             "interviewId": interviewId,
-            "questions": [final_question],
-            "questionIds": question_ids,
-            "usedContext": used_context,
-            "summary": summary
+            "questions": final_question,
+            "questionIds": question_ids
         }
 
     # 프로젝트 첫질문 생성
@@ -107,24 +103,21 @@ class InterviewServiceImpl(InterviewService):
         print(f" [service] Requesting follow-up question for interviewId={interviewId}, questionId={questionId}")
 
         # GPT가 먼저 질문 생성
-        questions = await self.interviewRepository.generateProjectFollowupQuestion(
+        gpt_question = await self.interviewRepository.generateProjectFollowupQuestion(
             interviewId, topic, techStack, projectExperience, companyName, questionId, answerText, userToken)
-        questions = questions[0]  # '질문중 하나만 사용한다고 가정'이라는데 이미 질문을 1개만 생성이어서 있으나 마나일듯
 
         # AGENT 에서 최종 질문 (final_question) 반환
-        print(f"🟢 [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{questions}")
-        final_question, used_context, summary = await self.agentService.get_best_followup_question(
-            companyName, topic, answerText, questions
+        print(f" [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{gpt_question}")
+        final_question = await self.agentService.get_best_followup_question(
+            companyName, topic, answerText, gpt_question, userToken
         )
         # question_ids = [questionId + i + 1 for i in range(len(questions))] 기존 코드
         question_ids = [questionId + 1]
 
         return {
             "interviewId": interviewId,
-            "questions": [final_question],
-            "questionIds": question_ids,
-            "usedContext": used_context,
-            "summary": summary
+            "questions": final_question,
+            "questionIds": question_ids
         }
 
     async def generateTechFollowupQuestion(self, request: TechFollowupGenerationRequest) -> dict:
@@ -135,17 +128,25 @@ class InterviewServiceImpl(InterviewService):
         userToken = request.userToken
         print(f" [service] Requesting follow-up question for interviewId={interviewId}, questionId={questionId}")
 
-        # GPT로 질문 먼저 생성  !!! 여기 아직 안바꿈!!!
-        followup_question = await self.interviewRepository.generateTechFollowupQuestion(
-            interviewId, techStack, questionId, answerText, userToken)
-        #questions = questions[0]
-        question_ids = [questionId + i + 1 for i in range(len(followup_question))]
+        # Tech DB에서 찾은 질문리스트 : 질문을 뽑아서 유사도 검사까지 함. 최종 top 3 질문 출력
+        selected_tech_questions = await self.agentService.get_best_tech_question(techStack, answerText, userToken)
+
+        # Tech 질문 유사도 비교 후 가장 연관성 높은 3개의 질문만 추리기
+
+
+        # GPT로 질문 나중에 생성
+        followup_tech_question = await self.interviewRepository.generateTechFollowupQuestion(
+            interviewId, techStack, selected_tech_questions, questionId, answerText, userToken
+        )
+
+        #question_ids = [questionId + i + 1 for i in range(len(followup_tech_question))]
+        question_ids = [questionId + 1]
 
         # AGENT를 도입해야하나? 아무튼 기술 DB 등록해서 연결시켜야하긴함.
 
         return {
             "interviewId": interviewId,
-            "questions": followup_question,
+            "questions": followup_tech_question,
             "questionIds": question_ids,
         }
 

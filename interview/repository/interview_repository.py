@@ -53,15 +53,16 @@ class InterviewRepository(ABC):
     async def generateTechFollowupQuestion(
             self,
             interviewId: int,
-            #topic: str,
             techStack: list[str],
-            #projectExperience: str,
-            #companyName: str,
+            selected_tech_questions: list[str],
             questionId: int,
             answerText: str,
             userToken: str,
     ) -> list[str]:
         pass
+
+
+
 
     @abstractmethod
     async def end_interview(self,
