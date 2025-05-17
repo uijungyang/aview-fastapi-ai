@@ -213,6 +213,7 @@ class InterviewRepositoryImpl(InterviewRepository):
         3. 반드시 하나의 질문 문장으로만 구성하세요.
 
         """
+        print(f"TECH Prompt: {prompt}")
 
         # GPT-4 호출
         response = await client.chat.completions.create(
@@ -227,8 +228,6 @@ class InterviewRepositoryImpl(InterviewRepository):
         print(f"{tech_question}")
 
         return tech_question
-
-
 
 
     # 면접 종료
