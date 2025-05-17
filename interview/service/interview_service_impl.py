@@ -68,7 +68,7 @@ class InterviewServiceImpl(InterviewService):
 
         return {
             "interviewId": interviewId,
-            "questions": final_question,
+            "questions": [final_question],
             "questionIds": question_ids
         }
 
@@ -116,7 +116,7 @@ class InterviewServiceImpl(InterviewService):
 
         return {
             "interviewId": interviewId,
-            "questions": final_question,
+            "questions": [final_question],
             "questionIds": question_ids
         }
 
@@ -146,7 +146,7 @@ class InterviewServiceImpl(InterviewService):
 
         return {
             "interviewId": interviewId,
-            "questions": followup_tech_question,
+            "questions": [followup_tech_question],
             "questionIds": question_ids,
         }
 
