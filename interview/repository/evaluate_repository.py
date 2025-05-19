@@ -5,10 +5,10 @@ from typing import Dict, List
 class EvaluateRepository(ABC):
     @abstractmethod
     async def interview_feedback(self,
-                            session_id: str,
-                            context: Dict[str, str],
-                            questions: List[str],
-                            answers: List[str]
+                                 interview: str,
+                                 questions: List[str],
+                                 answers: List[str],
+                                 userToken: str
                             ) -> Dict:
         pass
 

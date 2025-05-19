@@ -20,6 +20,7 @@ class InterviewServiceImpl(InterviewService):
     def __init__(self):
         self.interviewRepository = InterviewRepositoryImpl()
         self.evaluateRepository = EvaluateRepositoryImpl()
+        #self.end_entity = EndOfInterview
         self.agentService = AgentServiceImpl()
         self.ragRepository = RagRepositoryImpl()
 
@@ -154,45 +155,42 @@ class InterviewServiceImpl(InterviewService):
 
     async def end_interview(self, request: EndInterviewRequest) -> str:
         print(f" [Service] end_interview() 호출 - interviewId={request.interviewId}")
+
         interview_id = request.interviewId
-        user_token = request.userToken
+        userToken = request.userToken
         question_id = request.questionId
         answer_text = request.answerText
-        topic = request.topic
-        experience_level = request.experienceLevel
-        project_experience = request.projectExperience
-        academic_background = request.academicBackground
-        tech_stack = request.interviewTechStack
+        questions = request.questions
+        answers = request.answers
 
-        # 1. 종료 정보 저장
-        interview = EndOfInterview(
-        interview_id, user_token, question_id, answer_text, topic, experience_level, project_experience, academic_background, tech_stack,
+        # 1. 종료 정보 저장 (반환값 안 쓰면 그냥 호출만 하면 됨)
+        EndOfInterview(
+            interview_id,
+            userToken,
+            question_id,
+            answer_text,
         )
 
-
-
-        context = {
-            "userToken": request.userToken,
-            "topic": request.topic,
-            "experienceLevel": request.experienceLevel,
-            "projectExperience": request.projectExperience,
-            "acdemicBackground": request.academicBackground,
-            "techStack": request.interviewTechStack,
-        }
-
-        # 2. 답변 첨삭 (기존 인터뷰 결과)
+        # 2. GPT 기반 답변 첨삭 및 요약
+        # 면접자 답변 요약할 필요 없음 -> 전체 첨삭이기 때문
         interviewResult = await self.evaluateRepository.interview_feedback(
-            interview,
-            context,
-            request.questions,
-            request.answers
+            interview_id,
+            questions,
+            answers,
+            userToken
         )
 
-        # 3. 육각형 점수 평가 (질문+답변 전달 필요)
-        qa_items = [{"question": q, "answer": a} for q, a in zip(request.questions, request.answers)]
-        radarChart = await self.evaluateRepository.evaluate_session(interview_id, qa_items)
+        # 3. 질문 + 답변 → 평가용 구조로 변환
+        # 이 부분은 면접자 답변 요약해서 넘겨야함
+        qa_scores = [{"question": q, "answer": a} for q, a in zip(questions, answers)]
 
-        # 4. 인터뷰 결과에 육각형 점수 붙이기
+        # 4. 육각형 점수 평가
+        radarChart = await self.evaluateRepository.evaluate_session(
+            interview_id,
+            qa_scores
+        )
+
+        # 5. 결과에 점수 붙이기
         interviewResult["evaluation_result"] = radarChart
 
         print(f"{interviewResult}")
