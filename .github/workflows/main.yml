@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      triggered_by:
+        description: 'Who triggered the deployment?'
+        required: false
+        default: 'Manual Trigger'
 
 env:
   IMAGE_NAME: ${{ github.repository }}
