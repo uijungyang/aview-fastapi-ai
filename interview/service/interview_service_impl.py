@@ -4,6 +4,7 @@ from typing import List, Dict
 from agnet_api.repository.rag_repository_impl import RagRepositoryImpl
 from agnet_api.service.agent_service_impl import AgentServiceImpl
 from interview.entity.end_of_interview import EndOfInterview
+from interview.repository.evaluate_repository_impl import EvaluateRepositoryImpl
 from interview.repository.interview_repository_impl import InterviewRepositoryImpl
 from interview.service.interview_service import InterviewService
 from interview.service.request.question_generate_endInterview_request import EndInterviewRequest
@@ -18,6 +19,7 @@ class InterviewServiceImpl(InterviewService):
 
     def __init__(self):
         self.interviewRepository = InterviewRepositoryImpl()
+        self.evaluateRepository = EvaluateRepositoryImpl()
         self.agentService = AgentServiceImpl()
         self.ragRepository = RagRepositoryImpl()
 
@@ -152,19 +154,22 @@ class InterviewServiceImpl(InterviewService):
 
     async def end_interview(self, request: EndInterviewRequest) -> str:
         print(f" [Service] end_interview() 호출 - interviewId={request.interviewId}")
+        interview_id = request.interviewId
+        user_token = request.userToken
+        question_id = request.questionId
+        answer_text = request.answerText
+        topic = request.topic
+        experience_level = request.experienceLevel
+        project_experience = request.projectExperience
+        academic_background = request.academicBackground
+        tech_stack = request.interviewTechStack
 
         # 1. 종료 정보 저장
         interview = EndOfInterview(
-            interview_id=request.interviewId,
-            user_token=request.userToken,
-            question_id=request.questionId,
-            answer_text=request.answerText,
-            topic=request.topic,
-            experience_level=request.experienceLevel,
-            project_experience=request.projectExperience,
-            academic_background=request.academicBackground,
-            tech_stack=request.interviewTechStack
+        interview_id, user_token, question_id, answer_text, topic, experience_level, project_experience, academic_background, tech_stack,
         )
+
+
 
         context = {
             "userToken": request.userToken,
@@ -174,11 +179,21 @@ class InterviewServiceImpl(InterviewService):
             "acdemicBackground": request.academicBackground,
             "techStack": request.interviewTechStack,
         }
-        interviewResult = await self.interviewRepository.end_interview(
+
+        # 2. 답변 첨삭 (기존 인터뷰 결과)
+        interviewResult = await self.evaluateRepository.interview_feedback(
             interview,
             context,
             request.questions,
             request.answers
         )
+
+        # 3. 육각형 점수 평가 (질문+답변 전달 필요)
+        qa_items = [{"question": q, "answer": a} for q, a in zip(request.questions, request.answers)]
+        radarChart = await self.evaluateRepository.evaluate_session(interview_id, qa_items)
+
+        # 4. 인터뷰 결과에 육각형 점수 붙이기
+        interviewResult["evaluation_result"] = radarChart
+
         print(f"{interviewResult}")
         return interviewResult
