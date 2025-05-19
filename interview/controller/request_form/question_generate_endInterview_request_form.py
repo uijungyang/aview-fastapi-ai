@@ -5,18 +5,18 @@ from interview.service.request.question_generate_endInterview_request import End
 
 
 class QuestionGenerationEndInterviewRequestForm(BaseModel):
-    userToken: str
-    interviewId: int
-    questionId: int
-    answerText: str
+    userToken: str #
+    interviewId: int #
+    questionId: int  #
+    answerText: str  #
     topic: int
     experienceLevel: int
     projectExperience: int
     academicBackground: int
     interviewTechStack: List[int]
-    context: Dict[str, str]
-    questions: List[str]
-    answers: List[str]
+    context: Dict[str, str]  #
+    questions: List[str]  #
+    answers: List[str]   #
 
     def toEndInterviewRequest(self) -> EndInterviewRequest:
         return EndInterviewRequest(

@@ -4,7 +4,7 @@ import json
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import JSONResponse
 from openai import AsyncOpenAI
-
+from interview.entity.evaluation import EvaluationRequest
 from interview.controller.request_form.first_followup_question_request_form import FirstFollowupQuestionRequestForm
 from interview.controller.request_form.first_question_generation_request_form import FirstQuestionGenerationRequestForm
 from interview.controller.request_form.project_followup_question_generation_request_form import ProjectFollowupQuestionGenerationRequestForm
@@ -128,7 +128,7 @@ async def generateTechFollowupQuestion(
         print(f"❌ 프로젝트 꼬리질문 Error in generateTechFollowupQuestion(): {str(e)}")
         raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
 
-# 면접 종료
+# 면접 종료 + 평가 결과 반환
 @interviewRouter.post("/interview/question/end_interview")
 async def endInterview(
     requestForm: QuestionGenerationEndInterviewRequestForm,
@@ -136,9 +136,12 @@ async def endInterview(
     interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
     try:
+        # 1. requestForm → DTO로 변환
         dto = requestForm.toEndInterviewRequest()
-        user_token = requestForm.userToken
+
+        # 2. 면접 종료 및 첨삭 처리 (요약 + qna_scores 포함)
         answer = await interviewService.end_interview(dto)
+
         if isinstance(answer, str):
             try:
                 answer = json.loads(answer)
@@ -146,15 +149,27 @@ async def endInterview(
                 print(f"❌ FastAPI 응답 파싱 오류: {e}")
                 raise HTTPException(status_code=500, detail="AI 서버 응답 파싱 실패")
 
+        # 3. 질문 + 답변 → 평가용 QnA 구조로 변환
+        qna_items = [{"question": q, "answer": a} for q, a in zip(requestForm.questions, requestForm.answers)]
+
+        # 4. 평가 레포 호출 (radar chart 점수 산출)
+        radarChart = await interviewService.evaluateRepository.evaluate_session(
+            dto.interviewId,
+            qna_items
+        )
+
+        # 5. 최종 응답 구성
         return JSONResponse(
             content={
                 "message": "면접 종료",
-                "summary": answer.get("summary","요약 없음"),
-                "qa_scores": answer.get("qa_scores",[]),
-                "success": answer.get("success",True)
+                "summary": answer.get("summary", "요약 없음"),
+                "qna_scores": answer.get("qna_scores", []),
+                "evaluation_result": radarChart,
+                "success": answer.get("success", True)
             },
             status_code=status.HTTP_200_OK
         )
+
     except Exception as e:
         print(f"❌ [Controller] end_interview 오류: {str(e)}")
         raise HTTPException(status_code=500, detail="서버 내부 오류 발생")

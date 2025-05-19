@@ -60,16 +60,3 @@ class InterviewRepository(ABC):
             userToken: str,
     ) -> list[str]:
         pass
-
-
-
-
-    @abstractmethod
-    async def end_interview(self,
-        interview_id: str,
-        context: Dict[str, str],
-        questions: List[str],
-        answers: List[str]
-    ) -> Dict:
-        pass
-
