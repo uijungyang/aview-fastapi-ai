@@ -41,7 +41,8 @@ class EvaluateRepositoryImpl(EvaluateRepository):
                 "question": "...",
                 "answer": "...",
                 "intent": "지원동기",
-                "feedback": "답변이 구체적이고 논리적입니다."
+                "feedback": "답변은 핵심 내용을 잘 담고 있으며, 논리적인 흐름도 적절합니다. 특히 회사와의 연결고리를 잘 설명한 점이 좋습니다. 다만, 본인의 구체적 경험을 더 추가하면 설득력이 높아질 것입니다."
+}}
             }}
 
             질문: {q}
@@ -51,8 +52,18 @@ class EvaluateRepositoryImpl(EvaluateRepository):
             # 첨삭 프롬프트
             correction_prompt = f"""
             너는 면접 첨삭 전문가야.
-            1. 답변에 추가했으면 하는 문장이나, 단어 추천해줘 - 내용 보강 목적
-            2. 다음 답변에서 잘못된 문장을 고쳐줘. 틀린 문장은 ❌, 고친 문장은 ⭕로 표시해.
+
+            1. 아래 답변에서 **문맥상 어색하거나 부족한 부분**이 있다면 구체적으로 어떤 문장이나 단어를 추가하면 좋은지 추천해줘.  
+               (예: 사례 보강, 숫자 제시, 논리적 연결어 사용 등)
+
+            2. 문법 오류나 표현이 어색한 문장은 수정해줘. 틀린 문장은 ❌, 고친 문장은 ⭕로 표시해.  
+               단순히 틀린 단어만 고치는 게 아니라, **문맥 흐름에 맞게 자연스럽게** 다듬어줘.
+
+            예시:
+            - 추가 추천: "답변이 전체적으로 명확하지만, '협업 과정에서의 역할'에 대한 구체적인 예시가 들어가면 더 설득력 있습니다."  
+            - 첨삭 예시:  
+              ❌ 저는 프로젝트를 하면서 팀원과 의사소통이 어려웠지만 열심히 노력했습니다.  
+              ⭕ 프로젝트 초반에는 팀원과의 의사소통에 어려움이 있었지만, 회의 주기를 정하고 피드백 루틴을 만들어 해결했습니다.
 
             답변: {a}
             """.strip()
@@ -72,7 +83,7 @@ class EvaluateRepositoryImpl(EvaluateRepository):
                     model="gpt-4",
                     messages=[{"role": "user", "content": correction_prompt}],
                     temperature=0.3,
-                    max_tokens=300
+                    max_tokens=700
                 )
                 correction_text = correction_res.choices[0].message.content.strip()
 
