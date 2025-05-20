@@ -127,18 +127,22 @@ class EvaluateRepositoryImpl(EvaluateRepository):
 
     # 육각형 차트 생성을 위한 계산
     async def evaluate_session(self, qa_items: list[dict]) -> dict:
-        # qa_items가 뭔데??? evaluate_session에 넣은 qa_scores의 list
+        evaluation_result = {}
         question_ids = [item["questionId"] for item in qa_items]
         answer_summary = "\n\n".join(
             f"[질문] {item['question']}\n[답변] {item['answer']}" for item in qa_items
         )
 
-        evaluation_result = {}
-        # 커뮤 평가
-        if any(qid in [1,2,3] for qid in question_ids):
+        # 1. 커뮤니케이션 평가
+        if any(qid in [1, 2, 3] for qid in question_ids):
             comm_prompt = """
-    너는 IT 면접관이야. 아래 면접자의 인성 관련 질문과 답변을 보고 '커뮤니케이션 능력'을 100점 만점 기준으로 평가해. 점수(score)와 이유(reason)를 JSON 형식으로 출력해.
-    """
+            너는 IT 면접관이야. 아래 면접자의 인성 관련 질문과 답변을 보고 '커뮤니케이션 능력'을 10점 만점 기준으로 평가해.
+
+            출력 형식은 반드시 아래와 같은 JSON 객체 형태로 해줘:
+            { "communication": 7 }
+
+            숫자는 정수(int)로만 작성하고, 다른 설명은 절대 포함하지 마.
+            """
             comm_response = await client.chat.completions.create(
                 model="gpt-4",
                 messages=[
@@ -146,20 +150,20 @@ class EvaluateRepositoryImpl(EvaluateRepository):
                     {"role": "user", "content": answer_summary}
                 ]
             )
-            evaluation_result["communication"] = eval(comm_response.choices[0].message.content)
+            evaluation_result.update(json.loads(comm_response.choices[0].message.content))
 
-        # 프로젝트 평가
-        if any(qid in [4,5,6] for qid in question_ids):
+        # 2. 프로젝트 평가
+        if any(qid in [4, 5, 6] for qid in question_ids):
             proj_prompt = """
-    너는 IT 면접관이야. 아래 면접자의 프로젝트 관련 답변을 보고 다음 4개 항목을 각각 100점 만점 기준으로 평가해.
-    - 생산성
-    - 문서작성능력
-    - 유연성 (운영/서비스 경험 언급 없으면 0점)
-    - 문제해결능력
+            너는 IT 면접관이야. 아래 면접자의 프로젝트 관련 답변을 보고 다음 4개 항목을 각각 10점 만점 기준으로 평가해.
+            - 생산성
+            - 문서작성능력
+            - 유연성 (운영/서비스 경험 언급 없으면 0점)
+            - 문제해결능력
 
-    각 항목에 대해 점수(score)와 이유(reason)를 JSON 형식으로 출력해.
-    """
-
+            각 항목에 대해 점수(score)를 다음과 같은 JSON 형식으로 출력해:
+            {"productivity": 7, "documentation_skills": 6, "flexibility": 0, "problem_solving": 8}
+            """
             proj_response = await client.chat.completions.create(
                 model="gpt-4",
                 messages=[
@@ -167,15 +171,16 @@ class EvaluateRepositoryImpl(EvaluateRepository):
                     {"role": "user", "content": answer_summary}
                 ]
             )
-            proj_result = eval(proj_response.choices[0].message.content)
-            evaluation_result.update(proj_result)
+            evaluation_result.update(json.loads(proj_response.choices[0].message.content))
 
-        # 개발 역량 평가
-        if any(qid in [7,8] for qid in question_ids):
+        # 3. 개발 역량 평가
+        if any(qid in [7, 8] for qid in question_ids):
             tech_prompt = """
-    너는 IT 면접관이야. 아래 면접자의 기술 면접 답변을 보고 '개발 역량'을 100점 만점 기준으로 평가해. 점수(score)와 이유(reason)를 JSON 형식으로 출력해.
-    """
+            너는 IT 면접관이야. 아래 면접자의 기술 면접 답변을 보고 '개발 역량'을 10점 만점 기준으로 평가해.
 
+            출력 예시:
+            { "technical_skills": 8 }
+            """
             tech_response = await client.chat.completions.create(
                 model="gpt-4",
                 messages=[
@@ -183,10 +188,9 @@ class EvaluateRepositoryImpl(EvaluateRepository):
                     {"role": "user", "content": answer_summary}
                 ]
             )
-            evaluation_result["development"] = eval(tech_response.choices[0].message.content)
+            evaluation_result.update(json.loads(tech_response.choices[0].message.content))
 
         if not evaluation_result:
-            return {"error": "Invalid session type"}
+            return {"error": "Invalid or empty session"}
 
         return evaluation_result
-        #return eval(content)  # 주의: eval은 신뢰 가능한 GPT 출력일 때만 사용
