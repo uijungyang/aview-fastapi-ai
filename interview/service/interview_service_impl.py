@@ -31,7 +31,7 @@ class InterviewServiceImpl(InterviewService):
         experienceLevel = request.experienceLevel
         userToken = request.userToken
 
-        print(f" [service] Requesting question generation for interviewId={interviewId}")
+        #print(f" [service] Requesting question generation for interviewId={interviewId}")
 
         questionData = self.interviewRepository.generateQuestions(
             interviewId, topic, experienceLevel, userToken
@@ -55,7 +55,7 @@ class InterviewServiceImpl(InterviewService):
         answerText = request.answerText
         userToken = request.userToken
 
-        print(f" [service] Requesting first follow-up questions for interviewId={interviewId}")
+        #print(f" [service] Requesting first follow-up questions for interviewId={interviewId}")
 
         # 1. GPT에 먼저 질문 생성 요청
         gpt_question = await self.interviewRepository.generateFirstFollowup(
@@ -63,7 +63,7 @@ class InterviewServiceImpl(InterviewService):
 
 
          # 2. AGENT에게 최종 질문 선택 요청 (RAG + Fallback 포함)
-        print(f" [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{gpt_question}")
+        #print(f" [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{gpt_question}")
         final_question = await self.agentService.get_best_followup_question(
             companyName, topic, answerText, gpt_question, userToken
         )
@@ -82,7 +82,7 @@ class InterviewServiceImpl(InterviewService):
         userToken = request.userToken
         questionId = request.questionId
 
-        print(f" [service] Requesting question generation for interviewId={interviewId}")
+        #print(f" [service] Requesting question generation for interviewId={interviewId}")
 
         questions = self.interviewRepository.generateProjectQuestion(
             interviewId, projectExperience, userToken
@@ -110,7 +110,7 @@ class InterviewServiceImpl(InterviewService):
             interviewId, topic, techStack, projectExperience, companyName, questionId, answerText, userToken)
 
         # AGENT 에서 최종 질문 (final_question) 반환
-        print(f" [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{gpt_question}")
+        #print(f" [Interview Service] Calling AGENT now..., companyName: {companyName}, GPT's question :{gpt_question}")
         final_question = await self.agentService.get_best_followup_question(
             companyName, topic, answerText, gpt_question, userToken
         )
@@ -129,7 +129,7 @@ class InterviewServiceImpl(InterviewService):
         questionId = request.questionId
         answerText = request.answerText
         userToken = request.userToken
-        print(f" [service] Requesting follow-up question for interviewId={interviewId}, questionId={questionId}")
+        #print(f" [service] Requesting follow-up question for interviewId={interviewId}, questionId={questionId}")
 
         # Tech DB에서 찾은 질문리스트 : 질문을 뽑아서 유사도 검사까지 함. 최종 top 3 질문 출력
         selected_tech_questions = await self.agentService.get_best_tech_question(techStack, answerText, userToken)
@@ -154,7 +154,7 @@ class InterviewServiceImpl(InterviewService):
         }
 
     async def end_interview(self, request: EndInterviewRequest) -> str:
-        print(f" [Service] end_interview() 호출 - interviewId={request.interviewId}")
+        #print(f" [Service] end_interview() 호출 - interviewId={request.interviewId}")
 
         interview_id = request.interviewId
         userToken = request.userToken

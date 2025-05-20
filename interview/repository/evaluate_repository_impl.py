@@ -74,7 +74,7 @@ class EvaluateRepositoryImpl(EvaluateRepository):
                     model="gpt-4",
                     messages=[{"role": "user", "content": eval_prompt}],
                     temperature=0.3,
-                    max_tokens=300
+                    max_tokens=700
                 )
                 eval_data = json.loads(eval_res.choices[0].message.content.strip())
 
