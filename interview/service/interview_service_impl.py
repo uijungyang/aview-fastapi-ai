@@ -159,7 +159,7 @@ class InterviewServiceImpl(InterviewService):
         interview_id = request.interviewId
         userToken = request.userToken
         question_id = request.questionId
-        answer_text = request.answerText
+        #answer_text = request.answerText
         questions = request.questions
         answers = request.answers
 
@@ -168,13 +168,13 @@ class InterviewServiceImpl(InterviewService):
             interview_id,
             userToken,
             question_id,
-            answer_text,
+            #answer_text,
         )
 
         # 2. GPT 기반 답변 첨삭 및 요약
         # 면접자 답변 요약할 필요 없음 -> 전체 첨삭이기 때문
         interviewResult = await self.evaluateRepository.interview_feedback(
-            interview_id,
+            str(interview_id),
             questions,
             answers,
             userToken
@@ -182,11 +182,11 @@ class InterviewServiceImpl(InterviewService):
 
         # 3. 질문 + 답변 → 평가용 구조로 변환
         # 이 부분은 면접자 답변 요약해서 넘겨야함
-        qa_scores = [{"question": q, "answer": a} for q, a in zip(questions, answers)]
+        #question_id도 받아서 저장
+        qa_scores = [{"questionId":qid,"question": q, "answer": a} for qid, q, a in zip(question_id, questions, answers)]
 
         # 4. 육각형 점수 평가
         radarChart = await self.evaluateRepository.evaluate_session(
-            interview_id,
             qa_scores
         )
 

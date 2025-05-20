@@ -8,8 +8,8 @@ from interview.service.request.question_generate_endInterview_request import End
 class QuestionGenerationEndInterviewRequestForm(BaseModel):
     userToken: str #
     interviewId: int #
-    questionId: int  #
-    answerText: str  #
+    questionId: List[int]  # 질문id를 리스트로 받아 저장[1~8]
+    #answerText: str  # 백엔드에서 마지막 답변 받는 용도
     #topic: int
     #experienceLevel: int
     #projectExperience: int
@@ -24,7 +24,7 @@ class QuestionGenerationEndInterviewRequestForm(BaseModel):
             userToken=self.userToken,
             interviewId=self.interviewId,
             questionId=self.questionId,
-            answerText=self.answerText,
+            #answerText=self.answerText,
             #topic=self.topic,
             #experienceLevel=self.experienceLevel,
             #projectExperience=self.projectExperience,
