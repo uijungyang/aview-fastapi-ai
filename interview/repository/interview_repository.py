@@ -40,7 +40,7 @@ class InterviewRepository(ABC):
             self,
             interviewId: int,
             topic: str,
-            techStack: list[str],
+            #techStack: list[str],
             projectExperience: str,
             companyName: str,
             answerText: str,
