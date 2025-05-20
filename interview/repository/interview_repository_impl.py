@@ -130,55 +130,60 @@ class InterviewRepositoryImpl(InterviewRepository):
         except AttributeError:
             requirements = "REQUIREMENTS가 등록되어 있지 않습니다."
 
-        # 프롬프트 정의
+        # 기술스택 분리
+        tech_stack_str = ", ".join(techStack)
+
+            # 프롬프트 정의
         if projectExperience == "프로젝트 경험 있음":
-            tech_stack_str = ", ".join(techStack)
-            prompt = f"""
-        너는 IT 기업의 실제 면접관이야.
-        면접자의 이전 답변과 회사에서 자주 사용하는 면접 스타일을 바탕으로,
-        답변 흐름에 자연스럽게 이어지는 후속 질문을 만들어줘.
+            user_message = f"""
+                [질문 ID]: {questionId}
+                [면접자 답변]: {answerText}
+                [사용 기술 스택]: {tech_stack_str}
+                [직무 요구사항]: {requirements}\n
+                """
 
-        [질문 ID]: {questionId}
-        [면접자 답변]: {answerText}
-        [사용 기술 스택]: {tech_stack_str}
-        [직무 요구사항]: {requirements}\n
+            system_prompt = f"""
+                너는 IT 기업의 실제 면접관이야.
+                면접자의 이전 답변과 회사에서 자주 사용하는 면접 스타일을 바탕으로,
+                답변 흐름에 자연스럽게 이어지는 후속 질문을 만들어줘.
 
-        규칙:
-        - 질문은 **반드시 직전 답변에 논리적으로 이어지는 한 문장**이어야 함
-        - **"~한 적 있나요?", "~한 이유는 무엇인가요?"**처럼 부드럽고 구체적인 질문 형태 권장
-        - **"프로젝트 경험이 있다면..."**처럼 조건식으로 시작하는 문장은 금지
-        - 질문은 **짧고 명확하게**, 설명 없이 출력
-        - 사용한 기술(스택)의 활용 방식, 선택 이유, 문제 해결 경험 등으로 연결되면 좋음
-        """
+                규칙:
+                - 질문은 **반드시 직전 답변에 논리적으로 이어지는 한 문장**이어야 함
+                - **"~한 적 있나요?", "~한 이유는 무엇인가요?"**처럼 부드럽고 구체적인 질문 형태 권장
+                - **"프로젝트 경험이 있다면..."**처럼 조건식으로 시작하는 문장은 금지
+                - 질문은 **짧고 명확하게**, 설명 없이 출력
+                - 사용한 기술(스택)의 활용 방식, 선택 이유, 문제 해결 경험 등으로 연결되면 좋음
+                """
 
         else:
-            tech_stack_str = ", ".join(techStack)
-            prompt = f"""
-        너는 IT 기업의 실제 면접관이야.
-        면접자의 답변과 기업 면접 스타일에 맞춰, 직무나 기술 학습 경험에 기반한
-        자연스럽고 구체적인 꼬리질문을 한 문장으로 생성해줘.
+            user_message = f"""
+                [질문 ID]: {questionId}
+                [면접자 답변]: {answerText}
+                [사용 기술 스택]: {tech_stack_str}
+                [직무 요구사항]: {requirements}\n
+                """
 
-        [질문 ID]: {questionId}
-        [면접자 답변]: {answerText}
-        [사용 기술 스택]: {tech_stack_str}
-        [직무 요구사항]: {requirements}\n
+            system_prompt = f"""
+                너는 IT 기업의 실제 면접관이야.
+                면접자의 답변과 기업 면접 스타일에 맞춰, 직무나 기술 학습 경험에 기반한
+                자연스럽고 구체적인 꼬리질문을 한 문장으로 생성해줘.
 
-        규칙:
-        - 직무 관련 학습 경험, 협업 경험, 기술 습득 노력에 기반한 질문을 생성할 것
-        - **"경험이 없다면..."** 또는 가정형 조건문으로 시작하는 문장은 사용하지 말 것
-        - 반드시 **한 문장의 실제 질문**만 출력 (설명, 줄바꿈 금지)
-        - 사용한 기술(스택)의 활용 방식, 선택 이유, 문제 해결 경험 등으로 연결되면 좋음
-        
-        출력 결과:
-        1. ** 반드시 1문장으로 출력해**
-        """
+                규칙:
+                - 직무 관련 학습 경험, 협업 경험, 기술 습득 노력에 기반한 질문을 생성할 것
+                - **"경험이 없다면..."** 또는 가정형 조건문으로 시작하는 문장은 사용하지 말 것
+                - 반드시 **한 문장의 실제 질문**만 출력 (설명, 줄바꿈 금지)
+                - 사용한 기술(스택)의 활용 방식, 선택 이유, 문제 해결 경험 등으로 연결되면 좋음
+
+                출력 결과:
+                1. ** 반드시 1문장으로 출력해**
+                """
 
         # GPT-4 호출
         response = await client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "너는 진짜 면접관처럼 질문을 생성하는 역할이야."},
-                {"role": "user", "content": prompt}
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
             ]
         )
 
@@ -203,25 +208,36 @@ class InterviewRepositoryImpl(InterviewRepository):
         tech_stack_str = ", ".join(techStack)
         reference_text = "\n".join(f"- {q}" for q in selected_tech_questions)
 
-        prompt = f"""
-    **면접자 답변 {answerText}**, **기술 스택: {tech_stack_str}**, **기술 질문 예시:{reference_text}**을 참고해서 기술을 얼마나 잘 아는지 설명하라는 형태의 질문을 만들어. 
-        
-        출력 형식 지시사항:
-        1. 질문 한 문장만 출력하세요.
-        2. 질문 ID", "질문 예시", 설명, 줄바꿈 등의 부가 정보는 출력하지 마세요.
-        3. 반드시 하나의 질문 문장으로만 구성하세요.
+        # GPT가 참고할 text
+        user_message = f"""
+                면접자 답변: {answerText}
 
-        """
-        print(f"TECH Prompt: {prompt}")
+                기술 스택: {tech_stack_str}
+
+                참고 질문 예시: {reference_text}
+
+                """
+
+        # GPT에 내릴 명령
+        system_prompt = """
+                너는 IT 기업의 실제 면접관이야. 
+                면접자의 기술 역량을 평가할 수 있는 질문을 생성해야 해.
+
+                요구사항:
+                - 질문은 반드시 짧고 명확한 한 문장으로 작성하세요.
+                - 질문 ID, 설명, 예시 등은 절대 포함하지 마세요.
+                - 출력은 질문 문장 하나만 출력하세요.
+                """
 
         # GPT-4 호출
         response = await client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "너는 IT 기업의 면접관이야."},
-                {"role": "user", "content": prompt}
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
             ]
         )
+
         tech_question = response.choices[0].message.content.strip()
         # question = response.choices[0].message.content.strip()
         print(f"{tech_question}")
