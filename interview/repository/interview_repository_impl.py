@@ -51,7 +51,7 @@ class InterviewRepositoryImpl(InterviewRepository):
         try:
             # prompt에 있는 기업별 직무 요구사항 프롬프트 가져오기
             module_path = f"prompt.{companyName}.{topic.lower()}"
-            print(f"프롬프트 경로: {module_path}")
+            #print(f"프롬프트 경로: {module_path}")
             module = importlib.import_module(module_path)
             requirements = getattr(module, "REQUIREMENTS", "해당 직무의 요구사항이 없습니다.")
         except ModuleNotFoundError:
@@ -93,12 +93,12 @@ class InterviewRepositoryImpl(InterviewRepository):
         )
 
         if not response.choices:
-            raise ValueError("❌ GPT 응답이 비어 있음 (choices 없음)")
+            raise ValueError("GPT 응답이 비어 있음 (choices 없음)")
 
         question = response.choices[0].message.content.strip()
 
-        print(f" [repository] Follow-up questions generated: {question}")
-        print(f" returning questions: {question}")
+        #print(f" [repository] Follow-up questions generated: {question}")
+        #print(f" returning questions: {question}")
         return question
 
     # 프로젝트 질문: 3
@@ -121,7 +121,7 @@ class InterviewRepositoryImpl(InterviewRepository):
             self,
             interviewId: int,
             topic: str,
-            #techStack: list[str],
+            techStack: list[str],
             projectExperience: str,
             companyName : str,
             questionId: int,

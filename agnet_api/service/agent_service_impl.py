@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 from langchain_community.utils.math import cosine_similarity
 from langchain_openai import ChatOpenAI
-
 from agnet_api.entity.embedding import get_embedding
 from agnet_api.repository.agent_repository_impl import AgentRepositoryImpl
 from agnet_api.repository.rag_repository_impl import RagRepositoryImpl
@@ -24,13 +23,13 @@ class AgentServiceImpl:
         print(f" AGENT started: company={companyName}, topic={topic}, userToken={userToken}")
 
         # GPT 질문 VS answerText 유사도 비교 ->  결과: score
-        print(f" type(situation): {type(situation)}, type(gpt_question): {type(gpt_question)}")
+        #print(f" type(situation): {type(situation)}, type(gpt_question): {type(gpt_question)}")
         score_of_gpt = self.similarityRepository.embeddingForGPT(situation, gpt_question, userToken)
 
         # RAG 1차 (메인 회사 DB 조회)
         rag_main_result = self.ragRepository.rag_main(companyName, situation, userToken)
         #print(f" AGENT 도메인의 RAG Main 결과: {rag_main_result}")
-        print("🧪 main_rag_result type:", type(rag_main_result))
+        #print("🧪 main_rag_result type:", type(rag_main_result))
 
         # RAG 1차 유사도 점수, 유사도가 제일 높은 질문 1개
         main_rag_score, main_rag_question = self.similarityRepository.embeddingForMainRAG(situation, rag_main_result, userToken)
@@ -68,15 +67,15 @@ class AgentServiceImpl:
 
 
     async def get_best_tech_question(self, techStack: list[str], situation: str, userToken: str):
-        print(f"🔥 AGENT tech started: userToken={userToken}")
+        print(f"AGENT tech started: userToken={userToken}")
 
         # tech DB에 참고하기 : techStack기술중 DB에 있는거면 참고하고, 없는거면 참고 안하고.
         rag_tech_result = self.ragRepository.rag_tech(techStack, situation, userToken)
-        print(f" AGENT 도메인의 RAG Tech 결과: {rag_tech_result}")
+        #print(f" AGENT 도메인의 RAG Tech 결과: {rag_tech_result}")
 
         # 임베딩하고, 점수매기는거 여기서하셈
         top_tech_questions = self.techRepository.embeddingForTech(rag_tech_result, situation, userToken)
-        print(f"{top_tech_questions}")
+        #print(f"{top_tech_questions}")
 
         return top_tech_questions
         #final_question = await self.techRepository.generateTechFollowupQuestion()

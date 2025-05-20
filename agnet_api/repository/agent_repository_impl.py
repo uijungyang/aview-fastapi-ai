@@ -32,7 +32,7 @@ class AgentRepositoryImpl:
             final_score = fallback_rag_score
             source = "FALLBACK"
 
-        print(f"✅ 최종 선택: {source} 질문 (유사도: {final_score:.4f})")
+        print(f"최종 선택: {source} 질문 (유사도: {final_score:.4f})")
 
         return final_question
 

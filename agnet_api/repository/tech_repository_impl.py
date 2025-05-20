@@ -11,7 +11,7 @@ client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 class TechRepositoryImpl(TechRepository):
     # 선별한 tech 질문들 유사도 계산
     def embeddingForTech(self, tech_db_questions:list[str], answerText: str, userToken: str):
-        print(f" [Tech repository] Generating intro embedding Tech questions for userToken={userToken}")
+        print(f"[Tech repository] Generating intro embedding Tech questions for userToken={userToken}")
         answer_embedding = get_embedding(answerText)
 
         # 2. Tech DB에서 유사 질문 추출 (예: 3개)
