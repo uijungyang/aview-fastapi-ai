@@ -4,8 +4,8 @@ from typing import List, Dict
 class EndInterviewRequest(BaseModel):
     userToken: str
     interviewId: int
-    questionId: int
-    answerText: str
+    questionId: List[int] #질문ID를 리스트 형식으로 받음
+    #answerText: str
     #topic: int
     #experienceLevel: int
     #projectExperience: int

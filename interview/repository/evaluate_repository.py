@@ -13,5 +13,5 @@ class EvaluateRepository(ABC):
         pass
 
     @abstractmethod
-    async def evaluate_session(self, interview_id: int, qa_items: list[dict]) -> dict:
+    async def evaluate_session(self, qa_items: list[dict]) -> dict:
         pass
