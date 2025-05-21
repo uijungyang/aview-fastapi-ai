@@ -124,7 +124,7 @@ class EvaluateRepositoryImpl(EvaluateRepository):
         )
 
         # 1. 커뮤니케이션 평가
-        if any(qid in [1, 2, 3] for qid in question_ids):
+        if any(qid in [1, 2] for qid in question_ids):
             comm_prompt = """
             너는 IT 면접관이야. 아래 면접자의 인성 관련 질문과 답변을 보고 '커뮤니케이션 능력'을 10점 만점 기준으로 평가해.
 
@@ -143,7 +143,7 @@ class EvaluateRepositoryImpl(EvaluateRepository):
             evaluation_result.update(json.loads(comm_response.choices[0].message.content))
 
         # 2. 프로젝트 평가
-        if any(qid in [4, 5, 6] for qid in question_ids):
+        if any(qid in [3, 4, 5] for qid in question_ids):
             proj_prompt = """
             너는 IT 면접관이야. 아래 면접자의 프로젝트 관련 답변을 보고 다음 4개 항목을 각각 10점 만점 기준으로 평가해.
             - 생산성
@@ -164,7 +164,7 @@ class EvaluateRepositoryImpl(EvaluateRepository):
             evaluation_result.update(json.loads(proj_response.choices[0].message.content))
 
         # 3. 개발 역량 평가
-        if any(qid in [7, 8] for qid in question_ids):
+        if any(qid in [6, 7] for qid in question_ids):
             tech_prompt = """
             너는 IT 면접관이야. 아래 면접자의 기술 면접 답변을 보고 '개발 역량'을 10점 만점 기준으로 평가해.
             
