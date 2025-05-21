@@ -8,6 +8,7 @@ import sys
 from starlette.middleware.cors import CORSMiddleware
 
 from agnet_api.controller.agent_controller import agentRouter
+from asynchronous_sample.controller.asynchronous_sample_controller import asynchronousSampleRouter
 from chroma.delete_controller import deleteRouter
 from interview.controller.interview_controller import interviewRouter
 from config.cors_config import CorsConfig
@@ -42,6 +43,7 @@ app.include_router(rss.router)
 app.include_router(sitemap.router)
 app.include_router(deleteRouter, prefix="/chroma")
 app.include_router(agentRouter, prefix="/agent")
+app.include_router(asynchronousSampleRouter)
 
 
 @app.get("/robots.txt", include_in_schema=False)
