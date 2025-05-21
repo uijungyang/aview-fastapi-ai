@@ -30,68 +30,34 @@ class EvaluateRepositoryImpl(EvaluateRepository):
 
         # 2. 질문별 평가 (intent, feedback + 첨삭)
         async def evaluate_qna(q, a):
+            prompt = f"""
+            너는 면접관이야. 아래 질문과 지원자의 답변을 보고 다음 3가지를 JSON으로 작성해줘:
 
-            # 평가 프롬프트
-            eval_prompt = f"""
-            너는 면접 평가 담당 AI야.
-            다음 질문과 답변을 보고 3문장 이상으로 intent와 feedback을 아래 JSON 형식으로 작성해.
+            1. intent (이 질문이 무엇을 평가하는 질문인지, 예: 자기소개, 협업 경험, 기술지식 등)
+            2. feedback (답변에 대한 3문장 이상의 피드백)
+            3. correction (문법 오류나 어색한 표현 수정, 예: ❌, ⭕로 표시)
 
-            Example:
+            출력 예시:
             {{
                 "question": "...",
                 "answer": "...",
-                "intent": "지원동기",
-                "feedback": "답변은 핵심 내용을 잘 담고 있으며, 논리적인 흐름도 적절합니다. 특히 회사와의 연결고리를 잘 설명한 점이 좋습니다. 다만, 본인의 구체적 경험을 더 추가하면 설득력이 높아질 것입니다."
-}}
+                "intent": "...",
+                "feedback": "...",
+                "correction": "..."
             }}
 
             질문: {q}
             답변: {a}
-            """.strip()
-
-            # 첨삭 프롬프트
-            correction_prompt = f"""
-            너는 면접 첨삭 전문가야.
-
-            1. 아래 답변에서 **문맥상 어색하거나 부족한 부분**이 있다면 구체적으로 어떤 문장이나 단어를 추가하면 좋은지 추천해줘.  
-               (예: 사례 보강, 숫자 제시, 논리적 연결어 사용 등)
-
-            2. 문법 오류나 표현이 어색한 문장은 수정해줘. 틀린 문장은 ❌, 고친 문장은 ⭕로 표시해.  
-               단순히 틀린 단어만 고치는 게 아니라, **문맥 흐름에 맞게 자연스럽게** 다듬어줘.
-
-            예시:
-            - 추가 추천: "답변이 전체적으로 명확하지만, '협업 과정에서의 역할'에 대한 구체적인 예시가 들어가면 더 설득력 있습니다."  
-            - 첨삭 예시:  
-              ❌ 저는 프로젝트를 하면서 팀원과 의사소통이 어려웠지만 열심히 노력했습니다.  
-              ⭕ 프로젝트 초반에는 팀원과의 의사소통에 어려움이 있었지만, 회의 주기를 정하고 피드백 루틴을 만들어 해결했습니다.
-
-            답변: {a}
-            """.strip()
+            """
 
             try:
-                # 평가
-                eval_res = await client.chat.completions.create(
+                res = await client.chat.completions.create(
                     model="gpt-4",
-                    messages=[{"role": "user", "content": eval_prompt}],
+                    messages=[{"role": "user", "content": prompt}],
                     temperature=0.3,
-                    max_tokens=700
+                    max_tokens=700  # 필요 시 600으로도 가능
                 )
-                eval_data = json.loads(eval_res.choices[0].message.content.strip())
-
-                # 첨삭
-                correction_res = await client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[{"role": "user", "content": correction_prompt}],
-                    temperature=0.3,
-                    max_tokens=500
-                )
-                correction_text = correction_res.choices[0].message.content.strip()
-
-                # 병합
-                return {
-                    **eval_data,  # question, answer, intent, feedback
-                    "correction": correction_text
-                }
+                return json.loads(res.choices[0].message.content.strip())
 
             except Exception as e:
                 print(f" 평가 실패(질문:{q}): {e}")
