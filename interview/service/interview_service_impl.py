@@ -14,7 +14,7 @@ from interview.service.request.project_question_generation_request import Projec
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
 from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
 from interview.service.request.tech_followup_generation_request import TechFollowupGenerationRequest
-
+from utility.global_task_queue import task_queue
 
 class InterviewServiceImpl(InterviewService):
 
@@ -153,6 +153,16 @@ class InterviewServiceImpl(InterviewService):
             "questions": [followup_tech_question],
             "questionIds": question_ids,
         }
+
+    async def end_interview_background(self, request: EndInterviewRequest):
+        userToken = request.userToken
+        task_queue[userToken] = asyncio.Future()
+
+        try:
+            result = await self.end_interview(request)
+            task_queue[userToken].set_result(result)
+        except Exception as e:
+            task_queue[userToken].set_exception(e)
 
     async def end_interview(self, request: EndInterviewRequest) -> str:
         #print(f" [Service] end_interview() 호출 - interviewId={request.interviewId}")

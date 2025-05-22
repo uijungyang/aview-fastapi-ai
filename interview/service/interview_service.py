@@ -25,5 +25,9 @@ class InterviewService(ABC):
         pass
 
     @abstractmethod
+    async def end_interview_background(self, request: EndInterviewRequest):
+        pass
+
+    @abstractmethod
     async def end_interview(self, request: EndInterviewRequest) -> str:
         pass

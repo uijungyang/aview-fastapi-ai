@@ -1,7 +1,8 @@
+import asyncio
 import os
 import json
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
 from openai import AsyncOpenAI
 from interview.entity.evaluation import EvaluationRequest
@@ -13,6 +14,7 @@ from interview.controller.request_form.question_generate_endInterview_request_fo
 from interview.controller.request_form.tech_followup_question_generation_request_form import \
     TechFollowupQuestionGenerationRequestForm
 from interview.service.interview_service_impl import InterviewServiceImpl
+from utility.global_task_queue import task_queue
 
 interviewRouter = APIRouter()
 
@@ -132,20 +134,46 @@ async def generateTechFollowupQuestion(
 @interviewRouter.post("/interview/question/end_interview")
 async def getInterviewResult(
     requestForm: QuestionGenerationEndInterviewRequestForm,
+    background_tasks: BackgroundTasks,
     interviewService: InterviewServiceImpl = Depends(injectInterviewService)
 ):
-    try:
-        response = await interviewService.end_interview(requestForm.toEndInterviewRequest())
+    request = requestForm.toEndInterviewRequest()
+    userToken = request.userToken
 
-        if isinstance(response, str):
-            response = json.loads(response)
+    task_queue[userToken] = asyncio.Future()
+    background_tasks.add_task(interviewService.end_interview_background, request)
+    return JSONResponse(
+        content={"status": "PROCESSING"},
+        status_code=202
+    )
+    #try:
+     #   response = await interviewService.end_interview(requestForm.toEndInterviewRequest())
 
-        return JSONResponse(
-            content=response,
-            status_code=status.HTTP_200_OK,
-            headers={"Content-Type": "application/json; charset=UTF-8"}
-        )
+      #  if isinstance(response, str):
+       #     response = json.loads(response)
 
-    except Exception as e:
-        print(f"❌ Evaluation Error in end_interview: {str(e)}")
-        raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
+        #return JSONResponse(
+         #   content=response,
+          #  status_code=status.HTTP_200_OK,
+           # headers={"Content-Type": "application/json; charset=UTF-8"}
+        #)
+
+    #except Exception as e:
+     #   print(f"❌ Evaluation Error in end_interview: {str(e)}")
+        #raise HTTPException(status_code=500, detail="서버 내부 오류 발생")
+
+@interviewRouter.get("/interview/question/check-result/{userToken}")
+async def checkInterviewResult(userToken: str):
+    from utility.global_task_queue import task_queue
+    task = task_queue.get(userToken)
+
+    if task is None:
+        return JSONResponse(content={"status": "NOT_FOUND"}, status_code=404)
+    elif not task.done():
+        return JSONResponse(content={"status": "PROCESSING"}, status_code=200)
+    else:
+        try:
+            result = task.result()
+            return JSONResponse(content={"status": "DONE", "result": result}, status_code=200)
+        except Exception as e:
+            return JSONResponse(content={"status": "FAILED", "error": str(e)}, status_code=500)
