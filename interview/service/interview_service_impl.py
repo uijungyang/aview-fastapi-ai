@@ -1,4 +1,5 @@
 import json
+import asyncio
 from typing import List, Dict
 
 from agnet_api.repository.rag_repository_impl import RagRepositoryImpl
@@ -13,7 +14,7 @@ from interview.service.request.project_question_generation_request import Projec
 from interview.service.request.question_generation_request import FirstQuestionGenerationRequest
 from interview.service.request.project_followup_generation_request import ProjectFollowupGenerationRequest
 from interview.service.request.tech_followup_generation_request import TechFollowupGenerationRequest
-
+from utility.global_task_queue import task_queue
 
 class InterviewServiceImpl(InterviewService):
 
@@ -153,6 +154,16 @@ class InterviewServiceImpl(InterviewService):
             "questionIds": question_ids,
         }
 
+    async def end_interview_background(self, request: EndInterviewRequest):
+        userToken = request.userToken
+        task_queue[userToken] = asyncio.Future()
+
+        try:
+            result = await self.end_interview(request)
+            task_queue[userToken].set_result(result)
+        except Exception as e:
+            task_queue[userToken].set_exception(e)
+
     async def end_interview(self, request: EndInterviewRequest) -> str:
         #print(f" [Service] end_interview() 호출 - interviewId={request.interviewId}")
 
@@ -173,7 +184,7 @@ class InterviewServiceImpl(InterviewService):
 
         # 2. GPT 기반 답변 첨삭 및 요약
         # 면접자 답변 요약할 필요 없음 -> 전체 첨삭이기 때문
-        interviewResult = await self.evaluateRepository.interview_feedback(
+        interviewResult = self.evaluateRepository.interview_feedback(
             str(interview_id),
             questions,
             answers,
@@ -186,8 +197,12 @@ class InterviewServiceImpl(InterviewService):
         qa_scores = [{"questionId":qid,"question": q, "answer": a} for qid, q, a in zip(question_id, questions, answers)]
 
         # 4. 육각형 점수 평가
-        radarChart = await self.evaluateRepository.evaluate_session(
+        radarChart = self.evaluateRepository.evaluate_session(
             qa_scores
+        )
+        interviewResult, radarChart = await asyncio.gather(
+            interviewResult,
+            radarChart
         )
 
         # 5. 결과에 점수 붙이기
