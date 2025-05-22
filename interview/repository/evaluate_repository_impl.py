@@ -76,7 +76,7 @@ class EvaluateRepositoryImpl(EvaluateRepository):
                     model="gpt-4",
                     messages=[{"role": "user", "content": correction_prompt}],
                     temperature=0.3,
-                    max_tokens=500
+                    max_tokens=300
                 )
 
                 eval_res, correction_res = await asyncio.gather(eval_task, correction_task)
