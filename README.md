@@ -93,10 +93,10 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
 
 # 3. TECH
 
-### 💡 Domain Summary
+### 💡 Domain Structure
 
-이 프로젝트는 DDD(Domain-Driven Design) 원칙에 따라 `controller`, `entity`, `repository`, `service` 레이어로 구성됨.  
-각 도메인은 책임 단위로 분리되어 있으며, 유지보수성과 역할 분리가 명확하게 설계되어 있음. 
+각 도메인은 DDD(Domain-Driven Design) 원칙에 따라 `controller`, `entity`, `repository`, `service` 레이어로 구성됨.  
+또한 책임 단위로 분리되어 있으며, 유지보수성과 역할 분리가 명확하게 설계되어 있음. 
 <br>
 
 ```
@@ -116,39 +116,31 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
 |               ├──end_of_interview.py        면접 평가를 위한 정보 저장
 |               └── evaluation.py             평가 결과 저장
 │      ├── repository.py/
-|               ├─ interview_repository.py
-|               ├─ interview_repository_impl.py  면접 질문 생성 및 심화질문 생성 코드
-|               ├─ evaluate_repository.py        
-|               └── evaluate_repository_impl.py  면접 평가 코드
+|               ├─ interview_repository(_impl).py  면접 질문 생성 및 심화질문 생성 코드      
+|               └── evaluate_repository(_impl).py  면접 평가 코드
 │      └── service.py/
 |               ├── request/
-|               ├─ interview_service.py
-|               └── interview_service_impl.py   면접 질문 생성 및 심화질문 생성, 면접 평가 코드 제어
+|               └── interview_service(_impl).py   질문 생성 및 평가 로직 컨트롤
 |
 ├──  agent_api/   RAG 및 AGENT 도메인
 |      ├── controller.py/
-|               └── agent_controller.py 요청 처리 및 API 라우팅
+|               └── agent_controller.py          요청 처리 및 API 라우팅
 |      ├── entity.py/
 |               ├── embeddings.py
 |               └── rag_schema.py
 │      ├── repository.py/
-|               ├── agent_repository.py
-|               ├── agent_repository_impl.py   
-|               ├── rag_repository.py
-|               ├── rag_repository_impl.py
-|               ├── tech_repository.py
-|               ├── tech_repository_impl.py
-|               ├── simiarity_repository.py
-|               └── simiarity_repository_impl.py
+|               ├── agent_repository(_impl).py        Fallback 판단 및 질문 생성 경로 전환 로직
+|               ├── rag_repository(_impl).py          RAG 기반 면접질문 데이터베이스 검색
+|               ├── tech_repository(_impl).py         기술 면접 질문 전용 생성 로직 담당
+|               └── simiarity_repository(_impl).py    생성된 질문과 답변 간 유사도 비교 로직 구현
 │      └── service.py/
-|               ├── agent_service.py
-|               └── agent_service_impl.py
+|               └── agent_service(_impl).py           RAG, AGENT 로직 컨트롤
 │      
-├──  prompt/
-|      ├── danggeun/
-|      ├── toss/
-|      ├── sk_encore/
-|      └── kt_mobile/
+├──  prompt/           기업 맞춤형 질문 생성 프롬프트 
+|      ├── danggeun/   당근마켓
+|      ├── toss/       토스
+|      ├── sk_encore/  SK 엔코아
+|      └── kt_mobile/  KT 모바일
 
 ```
 
@@ -159,6 +151,16 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
 
 
 ### 💡 Explanation for codes regarding AI
+
+RAG (Retrieval Augmented Generation): '필요한 정보를 검색해서 답변할 때 활용하도록 돕는 기술' 이다. 학원 수강생들의 면접 후기 데이터 (회사 질문 데이터)를 사용자의 답변과 유사한 질문을 2개의 데이터베이스 (Main 기업 데이터, fallback 타기업 데이터)에서 1개를 뽑는다. 
+외부 문서나 데이터베이스에서 관련 정보를 찾고 그 내용을 토대로 답변을 생성하게 만듬
+
+### 💡 Prompt Engineering
+
+<img width="1318" alt="스크린샷 2025-06-16 오후 9 44 37" src="https://github.com/user-attachments/assets/0fe0d69b-ce47-49d4-8141-02c875bed8b7" />
+
+<img width="1300" alt="스크린샷 2025-06-16 오후 9 44 51" src="https://github.com/user-attachments/assets/3da27682-8f17-4106-983d-d8885b0fbaa9" />
+- 기업 맞춤형 질문 생성을 위해, 각 기업의 채용 정보를 requirement 항목으로 정의하여 활용함
 
 
   <br><br><br>
