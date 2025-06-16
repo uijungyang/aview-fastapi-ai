@@ -143,19 +143,21 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
 |      └── kt_mobile/  KT 모바일
 
 ```
-
+<br>
 
 ### 💡 JobStick's AI Tech Pipline
 ---
 ![Readme 기술파이프라인](https://github.com/user-attachments/assets/9c62a228-8052-4940-873a-d9a73ebf39ab)
 
+<br>
 
-### 💡 Explanation for codes regarding AI
+<!--  ### 💡 Explanation for codes regarding AI
 
 RAG (Retrieval Augmented Generation): '필요한 정보를 검색해서 답변할 때 활용하도록 돕는 기술' 이다. 학원 수강생들의 면접 후기 데이터 (회사 질문 데이터)를 사용자의 답변과 유사한 질문을 2개의 데이터베이스 (Main 기업 데이터, fallback 타기업 데이터)에서 1개를 뽑는다. 
-외부 문서나 데이터베이스에서 관련 정보를 찾고 그 내용을 토대로 답변을 생성하게 만듬
+외부 문서나 데이터베이스에서 관련 정보를 찾고 그 내용을 토대로 답변을 생성하게 만듬 -->
 
 ### 💡 Prompt Engineering
+---
 
 <img width="1318" alt="스크린샷 2025-06-16 오후 9 44 37" src="https://github.com/user-attachments/assets/0fe0d69b-ce47-49d4-8141-02c875bed8b7" />
 
