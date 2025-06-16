@@ -88,10 +88,13 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
 - 면접관 음성을 기존보다 자연스러운 모델로 교체해, 기계적인 느낌을 줄였습니다. <br>
 - AI 질문 생성 시 로딩 시간이 단축되었으며, '질문 생성 중'이라는 안내 문구를 추가해 사용자 경험을 개선했습니다.
 
+  <br><br><br>
 
 
 # 3. TECH
 ### 💡 Domain Summary
+
+
 
 
 
@@ -104,8 +107,18 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
 ### 💡 Explanation for codes regarding AI
 
 
+  <br><br><br>
 
+  
 # 4. Project Collaboration Workflow (Git · Notion · Slack)
+
+<img width="358" alt="스크린샷 2025-06-16 오후 7 24 59" src="https://github.com/user-attachments/assets/fa55f39a-7fb7-46f2-ae01-fe54fe9e544d" />
+<br>
+
+- 🛠️ **Backend (Django)**: [github.com/aview-django-backend](https://github.com/uijungyang/aview-django-backend)  
+- 🎨 **Frontend (Vue/Nuxt)**: [github.com/aview-nuxt-frontend](https://github.com/uijungyang/aview-nuxt-frontend) 
+- 📱 **Mobile App (Android)**: [github.com/aview-flutter-app](https://github.com/uijungyang/aview-flutter-app)
+
 
 <img width="1312" alt="스크린샷 2025-06-16 오후 7 35 36" src="https://github.com/user-attachments/assets/696b689f-373a-4ed3-a09e-5e892afdae52" />
 <br><br>
