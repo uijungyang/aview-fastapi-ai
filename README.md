@@ -1,6 +1,6 @@
-![header](https://capsule-render.vercel.app/api?type=waving&color=0:9b59b6,50:fd6e6a,100:f6d365&height=200&section=header&text=JobStick%20%E2%80%93%20AI%20Interview%20Backend&fontSize=50&fontColor=ffffff&animation=twinkling&frontAlign=68&frontAlignY=36)
+![header](https://capsule-render.vercel.app/api?type=speech&color=0:9b59b6,50:fd6e6a,100:f6d365&height=200&section=header&text=JobStick%20%E2%80%93%20AI%20Interview%20Backend&fontSize=50&fontColor=ffffff&animation=twinkling&frontAlign=68&frontAlignY=36)
 
-👤 Author: **양의정** ｜ AI Service Developer ｜ 📧 5012jung@gmail.com ｜ 🔗 [GitHub](https://github.com/uijungyang)
+👤 Author: **양의정** ｜ AI Service Developer ｜ 📧 5012jung@gmail.com ｜ 🔗 [UiJung's GitHub](https://github.com/uijungyang)
 
 <br>
 
@@ -18,7 +18,7 @@ It supports personalized interview experiences tailored to specific roles and co
 <br>
 As a new job seeker, it's relatively easy to get help with reviewing your resume or portfolio. But mock interviews? Not so much. Preparing for interviews depends heavily on your speaking proficiency and how much you've practiced. Effective interview preparation is not achieved overnight; it is the result of continuous and deliberate practice. That's why I decided to develop an AI-powered mock interview platform.
 
-<br>
+<br><br><br>
 
 # 2. Problem & Solution
 
@@ -46,7 +46,7 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
 
 ####  ⭕ After
 <img width="1298" alt="Readme Before After #1 부분 사진 2" src="https://github.com/user-attachments/assets/6b696b53-b083-4644-9a98-90a9d435a728" />
-사용자의 답변과 자연스럽게 이어지는 질문이 생성됨. 그리고 마지막에는 Tech 질문도 하도록 구성함
+사용자의 답변과 자연스럽게 이어지는 질문이 생성되었고, 마지막에는 Tech 질문을 추가함
 <br><br>
 
 ---
@@ -84,19 +84,73 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
 
 <br>
 
-- 메인 화면 UI를 더 깔끔하게 개선하고, 사용자가 JobStick에 대해 쉽게 이해할 수 있도록 주요 정보를 스크롤 구조로 구성했습니다. <br>
-- 면접관 음성을 기존보다 자연스러운 모델로 교체해, 기계적인 느낌을 줄였습니다. <br>
-- AI 질문 생성 시 로딩 시간이 단축되었으며, '질문 생성 중'이라는 안내 문구를 추가해 사용자 경험을 개선했습니다.
+- 메인 화면 UI를 더 깔끔하게 개선하고, 사용자가 JobStick에 대해 쉽게 이해할 수 있도록 주요 정보를 스크롤 구조로 구성함. <br>
+- 면접관 음성을 기존보다 자연스러운 모델로 교체해, 기계적인 느낌을 줄임. <br>
+- AI 질문 생성 시 로딩 시간이 단축되었으며, '질문 생성 중'이라는 안내 문구를 추가해 사용자 경험을 개선함.
 
   <br><br><br>
 
 
 # 3. TECH
+
 ### 💡 Domain Summary
 
+이 프로젝트는 DDD(Domain-Driven Design) 원칙에 따라 `controller`, `entity`, `repository`, `service` 레이어로 구성됨.  
+각 도메인은 책임 단위로 분리되어 있으며, 유지보수성과 역할 분리가 명확하게 설계되어 있음. 
+<br>
 
+```
+├──  app/ 
+|      └── main.py
+|
+├── interview/                  질문 생성 및 면접 평가 도메인
+|      ├── controller.py/       요청 처리 및 API 라우팅
+|               ├── request_form/ Server(Django) DB에 저장된 사용자의 정보를 받음
+|               └── interview_controller.py 
+|      ├── entity.py/
+|               ├── academic_background.py    사용자의 학력
+|               ├──experience_level.py        신입/경력
+|               ├──interview_tech_stack.py    사용가능한 기술스택
+|               ├──job_category.py            직무 선택
+|               ├──project_experience.py      프로젝트 경험 유/무
+|               ├──end_of_interview.py        면접 평가를 위한 정보 저장
+|               └── evaluation.py             평가 결과 저장
+│      ├── repository.py/
+|               ├─ interview_repository.py
+|               ├─ interview_repository_impl.py  면접 질문 생성 및 심화질문 생성 코드
+|               ├─ evaluate_repository.py        
+|               └── evaluate_repository_impl.py  면접 평가 코드
+│      └── service.py/
+|               ├── request/
+|               ├─ interview_service.py
+|               └── interview_service_impl.py   면접 질문 생성 및 심화질문 생성, 면접 평가 코드 제어
+|
+├──  agent_api/   RAG 및 AGENT 도메인
+|      ├── controller.py/
+|               └── agent_controller.py 요청 처리 및 API 라우팅
+|      ├── entity.py/
+|               ├── embeddings.py
+|               └── rag_schema.py
+│      ├── repository.py/
+|               ├── agent_repository.py
+|               ├── agent_repository_impl.py   
+|               ├── rag_repository.py
+|               ├── rag_repository_impl.py
+|               ├── tech_repository.py
+|               ├── tech_repository_impl.py
+|               ├── simiarity_repository.py
+|               └── simiarity_repository_impl.py
+│      └── service.py/
+|               ├── agent_service.py
+|               └── agent_service_impl.py
+│      
+├──  prompt/
+|      ├── danggeun/
+|      ├── toss/
+|      ├── sk_encore/
+|      └── kt_mobile/
 
-
+```
 
 
 ### 💡 JobStick's AI Tech Pipline
@@ -112,13 +166,13 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
   
 # 4. Project Collaboration Workflow (Git · Notion · Slack)
 
-<img width="358" alt="스크린샷 2025-06-16 오후 7 24 59" src="https://github.com/user-attachments/assets/fa55f39a-7fb7-46f2-ae01-fe54fe9e544d" />
-<br>
-
+<img width="358" alt="스크린샷 2025-06-16 오후 7 24 59" src="https://github.com/user-attachments/assets/fa55f39a-7fb7-46f2-ae01-fe54fe9e544d" /> <br>
+#### 애자일 보드 주소
 - 🛠️ **Backend (Django)**: [github.com/aview-django-backend](https://github.com/uijungyang/aview-django-backend)  
 - 🎨 **Frontend (Vue/Nuxt)**: [github.com/aview-nuxt-frontend](https://github.com/uijungyang/aview-nuxt-frontend) 
 - 📱 **Mobile App (Android)**: [github.com/aview-flutter-app](https://github.com/uijungyang/aview-flutter-app)
 
+<br>
 
 <img width="1312" alt="스크린샷 2025-06-16 오후 7 35 36" src="https://github.com/user-attachments/assets/696b689f-373a-4ed3-a09e-5e892afdae52" />
 <br><br>
