@@ -145,6 +145,59 @@ As a new job seeker, it's relatively easy to get help with reviewing your resume
 ```
 <br>
 
+### Tech Stack
+<table>
+  <tr>
+     <td>Backend</td>
+     <td><img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=Python&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/Django-092E20?style=flat&logo=Django&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/FastAPI-009688?style=flat&logo=FastAPI&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/Redis-FF4438?style=flat&logo=FastAPI&logoColor=white"/></td>
+  </tr>
+  <tr>
+     <td>AI/LLM</td>
+     <td><img src="https://img.shields.io/badge/OpenAI-412991?style=flat&logo=OpenAI&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/LangChain-1C3C3C?style=flat&logo=LangChain&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/RAG-%231E90FF.svg?style=for-the-badge&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/AGENT-%23FF69B4.svg?style=for-the-badge&logoColor=white"/></td>
+  </tr>
+  <tr>
+     <td>Frontend</td>
+     <td><img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=JavaScript&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=TypeScript&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/Vue.js-4FC08D?style=flat&logo=Vue.js&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/Nuxt-00DC82?style=flat&logo=Nuxt&logoColor=white"/></td>
+  </tr>
+  <tr>
+     <td>Database</td>
+     <td><img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=MySQL&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/ChromaDB-%231E90FF.svg?style=for-the-badge&logoColor=white"/></td>
+  </tr>
+   <tr>
+     <td> Infra / DevOps</td>
+      <td><img src="https://img.shields.io/badge/AWS-%231E90FF.svg?style=for-the-badge&logoColor=white"/></td>
+      <td><img src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=Docker&logoColor=white"/></td>
+      <td><img src="https://img.shields.io/badge/GitHubActions-2088FF?style=flat&logo=GitHubActions&logoColor=white"/></td>
+      <td><img src="https://img.shields.io/badge/Linux-FCC624?style=flat&logo=Linux&logoColor=white"/></td> 
+      <td><img src="https://img.shields.io/badge/Ubuntu-E95420?style=flat&logo=Linux&logoColor=white"/></td>
+      <td><img src="https://img.shields.io/badge/WSL-%23FF69B4.svg?style=for-the-badge&logoColor=white"/></td>
+      <td><img src="https://img.shields.io/badge/Go-00ADD8?style=flat&logo=Dart&logoColor=white"/></td>
+  </tr>
+  <tr>
+     <td>Collaboration</td>
+     <td><img src="https://img.shields.io/badge/Git-F05032?style=flat&logo=Git&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/Notion-000000?style=flat&logo=Notion&logoColor=white"/></td>
+     <td><img src="https://img.shields.io/badge/Slack-4A154B?style=flat&logo=Slack&logoColor=white"/></td>
+  </tr>
+    <tr>
+     <td>Application</td>
+     <td><img src="https://img.shields.io/badge/Dart-0175C2?style=flat&logo=Dart&logoColor=white"/></td>
+  </tr>
+</table>
+
+
+
 ### 💡 JobStick's AI Tech Pipline
 ---
 ![Readme 기술파이프라인](https://github.com/user-attachments/assets/9c62a228-8052-4940-873a-d9a73ebf39ab)
